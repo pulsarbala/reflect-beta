@@ -747,11 +747,16 @@
 									GET RSSI
 								</button>
 							</td>
-              <!-- <td>
-                <button type="button" class="button" onclick="sendAT('GET DATEM'); button_press = 11">
-                GET DATEM
+              <td>
+                <button type="button" class="button" onclick="document.getElementById('cmd').value='AT+NAME=' ; button_press = 11">
+                AUTO
                 </button>
-              </td>                  						 -->
+              </td>
+              <td>
+							  <button type="button" class="button" onclick="sendAT('AT+RESET=1'); button_press = 5">
+							  RESET
+							  </button>
+							  </td>
 						</tr>
 						<tr>
 							<input type="text" id="cmd" onkeydown="wasEnter(this)">
