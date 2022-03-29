@@ -748,15 +748,15 @@
 								</button>
 							</td>
               <td>
-                <button type="button" class="button" onclick="document.getElementById('cmd').value='AT+NAME=' ; button_press = 11">
-                AUTO
-                </button>
-              </td>
-              <td>
-							  <button type="button" class="button" onclick="sendAT('AT+RESET=1'); button_press = 5">
-							  RESET
-							  </button>
-							  </td>
+								<button type="button" class="button" onclick="document.getElementById('cmd').value='AT+NAME='; button_press = 6">
+									SET NAME
+								</button>
+							</td>
+							<td>
+								<button type="button"  class="button"  onclick="sendAT('AT+RESET=1'); button_press = 7">
+									RESET
+								</button>
+							</td>
 						</tr>
 						<tr>
 							<input type="text" id="cmd" onkeydown="wasEnter(this)">
