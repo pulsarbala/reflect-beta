@@ -59,46 +59,71 @@ body{
    margin-right:5px;
    font-weight:bold;
    }
-#header .tag_menu:hover{
+#header .tag_menu:hover{  /*background-color has an impact*/
   background:none;
   }
 .nav .open>a, .nav .open>a:hover, .nav .open>a:focus{
   background:none;
-color: #26a6b6!important;
+  color: #5bb626!important;
   }
 .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus{
   background:none;
-  color:#fff!important;
+  color:rgb(51, 179, 74)!important;
+  background-color: #13225d; 
   }
-.drop_1 {
+.drop_1 {   /*background-color has an impact*/
   min-width:200px;
   padding-top:15px;
-  padding-bottom:15px; 
-   }
-.drop_1 a{
-	  padding-top:5px!important;
-	  padding-bottom:5px!important;
-	  font-weight:bold!important;
-	   }
+  padding-bottom:15px;
+  }
+.drop_1 a{  /*background-color has an impact*/
+	padding-top:5px!important;
+	padding-bottom:5px!important;
+	font-weight:bold!important;
+	}
 .drop_1 a:hover{
-      background:#1d3ab000!important;
-	  color:#fff!important; 
-	   }
+  background:#1d3ab000!important;
+	color:#f37f12!important; 
+  }
 .about_header .navbar-default{
-    background:#13225d00;
+  background:#13225d00;
 	padding-top:20px;
 	padding-bottom:20px; 
-	 }
+	}
 /*********************header_end****************/ 
 /*********************center****************/
 #center {  
-  background-image:url("../img/119.png");
+  /* background-image:url("../img/119.png");
   padding-top: 180px;
   padding-bottom: 250px;
   min-width:100%;
   min-height:100%;
   text-align:center;
-  background-attachment:fixed;  
+  background-attachment:fixed;   */
+  background: url("../img/pexels-photo-2259232.jpeg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+/* @media screen and (orientation: landscape) {
+  body {
+    background: url(../img/119.png) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  }
+} */
+
+@media screen and (min-width: 10px) {
+  body {
+    background: url(../img/pexels-photo-2259232.jpeg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  }
 }
 .center h1{
 color:#000;
@@ -145,7 +170,7 @@ color:#fff;
 .grid figure {
  position: relative;
  float: left;
- overflow: hidden;
+ overflow:hidden;
  min-width:100%;
  max-width: 480px;
  background: #3085a3;
@@ -247,8 +272,5 @@ figure.effect-lexi:hover p {
 	-webkit-transform: translate3d(0,0,0);
 	transform: translate3d(0,0,0);
 }
-
-
-
 
 

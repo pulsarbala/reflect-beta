@@ -343,9 +343,6 @@
         }
         else if(string_check.includes("Logged In Success")){
           log(" <- Connected");
-           sendATL('AT+PT=1');
-           setTimeout(trace_button_check, 1000);
-
         }
         else{
           // Log the incoming string (format slightly)
@@ -494,7 +491,7 @@
         border: none;
         /* color: white; */
         /* padding: 10px 30px; */
-        height:  248px;
+        height:  200px;
         width: 273px;
         text-align: left;
         text-decoration: none;
@@ -504,21 +501,6 @@
         cursor: pointer;
         resize: none;
 	}
-	.textarea1 {
-        background-color: white;
-        border: none;
-        /* color: white; */
-        /* padding: 10px 30px; */
-        height:  100px;
-        width: 273px;
-        text-align: left;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 12px;
-        margin: 4px 2px;
-        cursor: pointer;
-        resize: none;
-	}  
 	</style>
   <style>
   .navbar {
@@ -534,118 +516,7 @@
   .navbar-default {
     background: transparent;
   }
-
-  .container1{
-    display: flex;
-  }
-  .fixed{
-      width: 200px;
-  }
-  .flex-item{
-      flex-grow: 1;
-  }
-
-  .blocks {
-    display: inline-block; 
-    /* border: solid 2px red;    */
-    padding: 16px 20px;
-    display: flex;
-      align-items: left;
-      justify-content: left;
-      margin: 0 auto;
-    height:50px; 
-    width: 300px;
-    font-weight: bold;
-    color: whitesmoke;
-    /* font-family: "verdana"; */
-    font-size: 1.4em;
-    overflow: hidden;
-  /*Hide content before animation*/
-    /* border-right: .1em solid white; */
-  /*Cursor*/
-    white-space: nowrap;
-  /*Keep text on same line*/
-    margin: 0 auto;
-  /*Scrolling effect while typing*/
-    letter-spacing: .1em;
-    animation: typing 3s steps(30, end), blink-caret .75s steps(1, end) infinite alternate;    
-  }
-.wrap{
-    width:210px;    
-}
   </style>
-<style>
-/* Button used to open the contact form - fixed at the bottom of the page */
-.open-button {
-  background-color: #555;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  opacity: 0.8;
-  position: fixed;
-  bottom: 23px;
-  right: 28px;
-  width: 280px;
-}
-
-/* The popup form - hidden by default */
-.form-popup {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  right: 15px;
-  border: 3px solid #f1f1f1;
-  z-index: 9;
-}
-
-/* Add styles to the form container */
-.form-container {
-  max-width: 300px;
-  padding: 10px;
-  background-color: white;
-}
-
-/* Full-width input fields */
-.form-container input[type=text], .form-container input[type=password] {
-  width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
-}
-
-/* When the inputs get focus, do something */
-.form-container input[type=text]:focus, .form-container input[type=password]:focus {
-  background-color: #ddd;
-  outline: none;
-}
-
-/* Set a style for the submit/login button */
-.form-container .btn {
-  background-color: #04AA6D;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom:10px;
-  opacity: 0.8;
-}
-
-/* Add a red background color to the cancel button */
-.form-container .cancel {
-  background-color: red;
-}
-
-/* Add some hover effects to buttons */
-.form-container .btn:hover, .open-button:hover {
-  opacity: 1;
-}
-
-</style>
-
-
     <noscript>
         <link rel="stylesheet" href="css/skel-noscript.css" />
         <link rel="stylesheet" href="css/style.css" />
@@ -677,8 +548,8 @@
 					<a href="http://www.pulsarmeasurement.com" style="text-decoration:none;">
 						<img src="./img/pulsarlogo-old.svg"  alt="Logo" style="width:200px;height:80px;border:none;text-decoration:none;color:#eeeeee00;">
 					</a>								
-				</div>
-            </div>
+				</div>			
+            </div>		
 
 			<!-- <div class="center"><h1>Reflect</h1></div> -->
             <!-- Collect the nav links, forms, and other content for toggling -->            
@@ -716,13 +587,13 @@
 			<td align="center" style="padding:0;">
 			  <table role="presentation" style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;">
 				<tr>
-				  <td style="padding:30px;background-color:#4f5edd;">
-					<h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;color:white;letter-spacing:-0.02em;">Bluetooth Remote Access</h1>
+				  <td style="padding:30px;background-color:#6672e038;">
+					<h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">Bluetooth Remote Access</h1>                                
 						<table>
                             <tr>
                                 <td><button type="button" class="button button-style1" onclick="ble_connect(); button_press = 1">Device Scan</button></td>
                                 <td><button type="button" class="button button-style1" onclick="bleDisconnect();  button_press = 2">End Session</button></td> 
-                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+PT=1');  button_press = 3">Login</button></td>  -->
+                                <td><button type="button" class="button button-style1" onclick="sendATL('AT+PT=1');  button_press = 3">Login</button></td> 
                                 <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+AUTH=123321');  button_press = 3">Test-Login</button></td> 
                                 <td>Hex: <input type="checkbox" id="myCheck">
                                 <p id="text" style="display:none">Checkbox is CHECKED!</p></td>                -->
@@ -730,25 +601,9 @@
 					    </table>
 					    <table>                    
                             <tr>
-                                <td>
-                                  <textarea id="log" class="textarea" rows="8" cols="31" style="font-size: 10pt; font-weight: bold" readonly></textarea></td>
-                                <td>
-                                 
-                                  
-                                  
-                                  
-                                 
-                                 <div class='wrap'>
-                                  <div class = "blocks">Level :  </div>
-                                  <div class = "blocks">Distance :</div>
-                                  <div class = "blocks">Status : OK </div>
-                                  <textarea id="data-log" class="textarea1" rows="1" cols="1" style="font-size: 10pt; font-weight: bold" readonly></textarea>
-                                </div>
-
-                                 </td>
-                                 
+                                <td><textarea id="log" class="textarea" rows="8" cols="31" readonly></textarea></td>
+                                <td><textarea id="data-log" class="textarea" rows="8" cols="31" style="font-size: 16pt; font-weight: bold" readonly></textarea></td>
                             </tr>
-
                         </table>
                         <table>
                             <tr>
@@ -964,11 +819,11 @@
                                 </td>               
                             </tr> -->
                             <tr>
-                                <!-- <td>
+                                <td>
                                     <button type="button" class="button" onclick="trace_button_check();">
                                         TRACE ON
                                     </button>
-                                </td> -->                                
+                                </td>                                
                                 <td>
                                     <button type="button"  class="button" onclick="trace_off();">
                                         TRACE OFF
