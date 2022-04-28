@@ -334,9 +334,7 @@
       // var checkBox = document.getElementById("myCheck");
       const doc_value = document.getElementById('cmd').value;
       const string_check =  decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0','');
-//alert('incoming data');
-//alert(string_check);
-//alert(login_stage);
+alert('incoming data');
       // if ((checkBox.checked == true) && (button_press == 8))
       // {
       //   var hex = Uint8tohex(readInValue);
@@ -363,27 +361,21 @@
             login_stage = 2;
             log(" <- Log in Success");
         }
-        else if(string_check.includes("Logged In Success") || (string_check.includes("OK")  && login_stage == 1)){
-          closeForm();
+        else if(string_check.includes("Logged In Success")){
           log(" <- Connected");
            sendATL('AT+PT=1');
            setTimeout(trace_button_check, 1000);
-        }
-        else if( ( string_check.includes("ERROR") || string_check.includes("Logged In failed")) && login_stage == 1 )
-        {
-            document.getElementById('lblpsw').innerHTML ='login failed';
-            document.getElementById('lblpsw').style.color = "red";
-            document.getElementById("pswbox").value='';
-            //alert(string_check);
-           // alert(login_stage);
-            openForm();
+
         }
         else{
-            // Log the incoming string (format slightly)
-              log(" <- " + decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0',''));   
-          
+        alert(recd);
+        if(recd.includes("Logged In failed")){
+          //alert("show the password box");
+          openForm();
         }
-        
+          // Log the incoming string (format slightly)
+          log(" <- " + decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0',''));   
+        }
       }
     }
   
@@ -395,7 +387,6 @@
   
     async function bleDisconnect()
     {
-      closeForm();
       log("Disconnecting");
       if (device.gatt.connected) {
           device.gatt.disconnect();
@@ -427,7 +418,6 @@
 
     // Scan, connect and explore CodeLess BLE device
     async function ble_connect() {
-      closeForm();
       try {
         // Define a scan filter and prepare for interaction with Codeless Service
           log('Requesting Bluetooth Device...');
@@ -445,13 +435,13 @@
         flowcontrolChar.addEventListener('characteristicvaluechanged', incomingData);
         log('Ready to communicate!\n');
         login_stage = 1;
-        sendATL('AT+AUTH=123321'); //--> BB: commented
+        sendATL('AT+AUTH=123321');
         button_press = 3;
       }
       catch(error) {
         log('Failed: ' + error);
       }
-    }
+    }    
 
     // Send an AT command to the CodeLess BLE peer
     async function sendAT(cmd) {
@@ -688,20 +678,11 @@
 
 <script>
   function openForm() {
+    // alert("login")
     document.getElementById("myForm").style.display = "block";
-  }
-
-  function sendLoginCmd() {
-    //alert("sendLoginCmd"+'AT+AUTH='+document.getElementById("pswbox").value);
-    sendATL('AT+AUTH='+document.getElementById("pswbox").value);
-  }
-  function closeForm2() {
-    document.getElementById('lblpsw').innerHTML ='';
-    document.getElementById('lblpsw').style.color = "black";
   }
   
   function closeForm() {
-    
     document.getElementById("myForm").style.display = "none";
   }
   </script>
@@ -770,17 +751,20 @@
 
            <div class="form-popup" id="myForm">
               <form action="" class="form-container">
-                <!-- <h1>Login</h1> -->            
+                <!-- <h1>Login</h1> -->
+            
                 <!-- <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" name="email" required> -->            
-                <label for="psw" id="lblpsw" ><b>Passcode</b></label>
-                <input type="password" placeholder="Enter Passcode" id="pswbox" name="psw" required>            
-                <button type="button" class="btn" onclick=" sendLoginCmd(); closeForm2();  closeForm();">Login</button>
+                <input type="text" placeholder="Enter Email" name="email" required> -->
+            
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+            
+                <button type="button" class="btn" onclick="closeForm()">Login</button>
                 <!-- <button type="button" class="btn cancel" onclick="closeForm()">Close</button> -->
               </form>
             </div>
 
-					    <table>           
+					    <table>                    
                             <tr>
                                 <td>
                                   <textarea id="log" class="textarea" rows="8" cols="31" style="font-size: 10pt; font-weight: bold" readonly></textarea></td>
@@ -1017,7 +1001,7 @@
                                     </button>
                                 </td> -->                                
                                 <td>
-                                    <button type="button"  class="button" onclick="sendAT('AT+PT=0'); trace_off();">
+                                    <button type="button"  class="button" onclick="trace_off();">
                                         TRACE OFF
                                     </button>
                                 </td>
