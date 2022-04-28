@@ -333,10 +333,7 @@
       let decoder = new TextDecoder('utf-8');
       // var checkBox = document.getElementById("myCheck");
       const doc_value = document.getElementById('cmd').value;
-      const string_check =  decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0','');
-//alert('incoming data');
-//alert(string_check);
-//alert(login_stage);
+      const string_check =  decoder.decode(readInValue).replace('\r','x').replace('\n','y').replace('\0','eeeez');      
       // if ((checkBox.checked == true) && (button_press == 8))
       // {
       //   var hex = Uint8tohex(readInValue);
@@ -363,27 +360,16 @@
             login_stage = 2;
             log(" <- Log in Success");
         }
-        else if(string_check.includes("Logged In Success") || (string_check.includes("OK")  && login_stage == 1)){
-          closeForm();
+        else if(string_check.includes("Logged In Success")){
           log(" <- Connected");
            sendATL('AT+PT=1');
            setTimeout(trace_button_check, 1000);
-        }
-        else if( ( string_check.includes("ERROR") || string_check.includes("Logged In failed")) && login_stage == 1 )
-        {
-            document.getElementById('lblpsw').innerHTML ='login failed';
-            document.getElementById('lblpsw').style.color = "red";
-            document.getElementById("pswbox").value='';
-            //alert(string_check);
-           // alert(login_stage);
-            openForm();
+
         }
         else{
-            // Log the incoming string (format slightly)
-              log(" <- " + decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0',''));   
-          
+          // Log the incoming string (format slightly)
+          log(" <- " + decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0',''));   
         }
-        
       }
     }
   
@@ -395,7 +381,6 @@
   
     async function bleDisconnect()
     {
-      closeForm();
       log("Disconnecting");
       if (device.gatt.connected) {
           device.gatt.disconnect();
@@ -427,7 +412,6 @@
 
     // Scan, connect and explore CodeLess BLE device
     async function ble_connect() {
-      closeForm();
       try {
         // Define a scan filter and prepare for interaction with Codeless Service
           log('Requesting Bluetooth Device...');
@@ -445,13 +429,13 @@
         flowcontrolChar.addEventListener('characteristicvaluechanged', incomingData);
         log('Ready to communicate!\n');
         login_stage = 1;
-        sendATL('AT+AUTH=123321'); //--> BB: commented
+        sendATL('AT+AUTH=123321');
         button_press = 3;
       }
       catch(error) {
         log('Failed: ' + error);
       }
-    }
+    }    
 
     // Send an AT command to the CodeLess BLE peer
     async function sendAT(cmd) {
@@ -569,6 +553,7 @@
   .navbar-default {
     background: transparent;
   }
+
   .container1{
     display: flex;
   }
@@ -607,7 +592,8 @@
 .wrap{
     width:210px;    
 }
- 
+  </style>
+<style>
 /* Button used to open the contact form - fixed at the bottom of the page */
 .open-button {
   background-color: #555;
@@ -622,89 +608,62 @@
   width: 280px;
 }
 
- /* The popup form - hidden by default */
-  .form-popup {
-    display: none;
-    /* position: fixed; */
-    position: relative;    
-    right: 0px;
-    bottom: 0px;
-    top: 0px;
-    left: 0px;
-    width: 508px;
-    max-width: 600px;
-    border: 1px solid #03681cd0;
-    z-index: 9;
-  }
-  
-  /* Add styles to the form container */
-  .form-container {
-    max-width: 600px;
-    width: 505px;
-    padding: 10px;
-    background-color: white;
-  }
-  
-  /* Full-width input fields */
-  .form-container input[type=text], .form-container input[type=password] {
-    width: 100%;
-    padding: 15px;
-    margin: 5px 0 22px 0;
-    border: none;
-    background: #f1f1f1;
-  }
-  
-  /* When the inputs get focus, do something */
-  .form-container input[type=text]:focus, .form-container input[type=password]:focus {
-    background-color: #ddd;
-    outline: none;
-  }
-  
-  /* Set a style for the submit/login button */
-  .form-container .btn {
-    background-color: #04AA6D;
-    color: rgb(255, 255, 255);
-    padding: 16px 20px;
-    border: none;
-    cursor: pointer;
-    width: 50%;
-    margin-bottom:10px;
-    opacity: 0.8;    
-  }
-  
-  /* Add a red background color to the cancel button */
-  .form-container .cancel {
-    background-color: red;
-  }
-  
-  /* Add some hover effects to buttons */
-  .form-container .btn:hover, .open-button:hover {
-    opacity: 1;
-  }
+/* The popup form - hidden by default */
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+.form-container input[type=text], .form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
 
 </style>
 
-
-
-<script>
-  function openForm() {
-    document.getElementById("myForm").style.display = "block";
-  }
-
-  function sendLoginCmd() {
-    //alert("sendLoginCmd"+'AT+AUTH='+document.getElementById("pswbox").value);
-    sendATL('AT+AUTH='+document.getElementById("pswbox").value);
-  }
-  function closeForm2() {
-    document.getElementById('lblpsw').innerHTML ='';
-    document.getElementById('lblpsw').style.color = "black";
-  }
-  
-  function closeForm() {
-    
-    document.getElementById("myForm").style.display = "none";
-  }
-  </script>
 
     <noscript>
         <link rel="stylesheet" href="css/skel-noscript.css" />
@@ -739,9 +698,29 @@
 					</a>								
 				</div>
             </div>
- 
+
+			<!-- <div class="center"><h1>Reflect</h1></div> -->
+            <!-- Collect the nav links, forms, and other content for toggling -->            
+			<!-- <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">				
+                <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a id="Bluefy" class="tag_menu" href="https://apps.apple.com/us/app/bluefy-web-ble-browser/id1492822055">Bluefy</a>           
+          </li>           
+					
+					<li class="dropdown">
+					  <a class="tag_menu" href="#" data-toggle="dropdown" role="button" aria-expanded="false">More<span class="caret"></span></a>					  
+					  <ul class="dropdown-menu drop_1" role="menu">
+              <li><a href="#">Menu 1</a></li>
+              <li><a href="#">Menu 2</a></li>
+              <li><a href="#">Menu 3</a></li>
+              <li><a href="#">Menu 4</a></li>
+					  </ul>
+          </li>					
+                </ul>				 
+            </div> -->
+            <!-- /.navbar-collapse -->
         </div>
- 
+        <!-- /.container-fluid -->
     </nav>
 </section>
 
@@ -762,25 +741,13 @@
                             <tr>
                                 <td><button type="button" class="button button-style1" onclick="ble_connect(); button_press = 1">Device Scan</button></td>
                                 <td><button type="button" class="button button-style1" onclick="bleDisconnect();  button_press = 2">End Session</button></td> 
-
-                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+AUTH=123321');  button_press = 3">Test-Login</button></td> -->
-                                <td><button type="button" class="button button-style1" onclick="openForm();  button_press = 3">Login</button></td>
+                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+PT=1');  button_press = 3">Login</button></td>  -->
+                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+AUTH=123321');  button_press = 3">Test-Login</button></td> 
+                                <td>Hex: <input type="checkbox" id="myCheck">
+                                <p id="text" style="display:none">Checkbox is CHECKED!</p></td>                -->
                             </tr>                    
 					    </table>
-
-           <div class="form-popup" id="myForm">
-              <form action="" class="form-container">
-                <!-- <h1>Login</h1> -->            
-                <!-- <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" name="email" required> -->            
-                <label for="psw" id="lblpsw" ><b>Passcode</b></label>
-                <input type="password" placeholder="Enter Passcode" id="pswbox" name="psw" required>            
-                <button type="button" class="btn" onclick=" sendLoginCmd(); closeForm2();  closeForm();">Login</button>
-                <!-- <button type="button" class="btn cancel" onclick="closeForm()">Close</button> -->
-              </form>
-            </div>
-
-					    <table>           
+					    <table>                    
                             <tr>
                                 <td>
                                   <textarea id="log" class="textarea" rows="8" cols="31" style="font-size: 10pt; font-weight: bold" readonly></textarea></td>
@@ -1017,7 +984,7 @@
                                     </button>
                                 </td> -->                                
                                 <td>
-                                    <button type="button"  class="button" onclick="sendAT('AT+PT=0'); trace_off();">
+                                    <button type="button"  class="button" onclick="trace_off();">
                                         TRACE OFF
                                     </button>
                                 </td>

@@ -63,7 +63,7 @@
     gate_stop = 0;//258;
     echo_var = 0;//45;
     noise_var = 0;//30;
-    status_var = 999;
+    status_var = 0;
     near_blanking_var = 0.3;
     far_blanking_var = 20.0;//6.0;
     far_blanking_dist = 7.2;
@@ -77,46 +77,26 @@
     var login_stage = 0;    // Login status
 
     function echo_start() {
-    // do some stuff...
-    // no need to recall the function (it's an interval, it'll loop forever)
+
     if(login_stage == 2) {
         sendAT('GET ECHO');
-        button_press = 10;
-        datem_tid = setInterval(datem_start, 5000);
-        clearTimeout(echo_tid);
+
     } else {
-        clearTimeout(echo_tid);
-        clearTimeout(datem_tid);
+
+
         }
     }
 
     function datem_start() {
-        if(login_stage == 2) {
-            sendAT('GET DATEM');
-            button_press = 11;
-            echo_tid = setInterval(echo_start, 5000);
-            clearTimeout(datem_tid);
-        } else {
-            clearTimeout(echo_tid);
-            clearTimeout(datem_tid);
-        }
+        
     }
 
     function trace_button_check() {
-        if(login_stage == 2) {
-            log(' <- TRACE ON');
-            sendAT('GET ECHO');
-            button_press = 10;
-            datem_tid = setInterval(datem_start, 5000);            
-        } else {
-            log('Device not in passthrough mode!');
-        }
+        
     }
 
     function trace_off() {
-        clearTimeout(echo_tid);
-        clearTimeout(datem_tid);
-        log(' <- TRACE OFF');
+       
     }
 
     function enter_button_check() {
@@ -162,19 +142,7 @@
       }
       return r;
     }
-    // Function to detect iOS platform
-    // function iOS() {
-    //   return [
-    //     'iPad Simulator',
-    //     'iPhone Simulator',
-    //     'iPod Simulator',
-    //     'iPad',
-    //     'iPhone',
-    //     'iPod'
-    //   ].includes(navigator.platform)
-    //   // iPad on iOS 13 detection
-    //   || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-    // }
+
 
     // Function to flip the hex string (if needed)
     function flipHexString(hexValue, hexDigits) {
@@ -212,9 +180,7 @@
         // a.push(s.getUint8(i));
         a.push('0x' + ('00' + s.getUint8(i).toString(16)).slice(-2));
       }
-      // console.log(a);
-      // console.log(echo);
-      // console.log(datem);
+
       
       if((((doc_value == "GET ECHO") || (doc_value == "GET DATEM") && (button_press == 8)) || (button_press == 10) || (button_press == 11)) && (s.byteLength == 246)) {
         // Populate the dynamic variables
@@ -224,8 +190,6 @@
         compensated_var = hexToFloat('0x' + ('00' + s.getUint8(12).toString(16)).slice(-2) + ('00' + s.getUint8(13).toString(16)).slice(-2) + ('00' + s.getUint8(14).toString(16)).slice(-2) + ('00' + s.getUint8(15).toString(16)).slice(-2));
         mA_output_var = hexToFloat('0x' + ('00' + s.getUint8(16).toString(16)).slice(-2) + ('00' + s.getUint8(17).toString(16)).slice(-2) + ('00' + s.getUint8(18).toString(16)).slice(-2) + ('00' + s.getUint8(19).toString(16)).slice(-2));
         temperature_var = hexToFloat('0x' + ('00' + s.getUint8(20).toString(16)).slice(-2) + ('00' + s.getUint8(21).toString(16)).slice(-2) + ('00' + s.getUint8(22).toString(16)).slice(-2) + ('00' + s.getUint8(23).toString(16)).slice(-2));
-        // date_var = hexToFloat('0x' + ('00' + s.getUint8(24).toString(16)).slice(-2) + ('00' + s.getUint8(25).toString(16)).slice(-2) + ('00' + s.getUint8(26).toString(16)).slice(-2) + ('00' + s.getUint8(27).toString(16)).slice(-2));
-        // time_var = hexToFloat('0x' + ('00' + s.getUint8(28).toString(16)).slice(-2) + ('00' + s.getUint8(29).toString(16)).slice(-2) + ('00' + s.getUint8(30).toString(16)).slice(-2) + ('00' + s.getUint8(31).toString(16)).slice(-2));
         gate_start = s.getUint8(24)*256 + s.getUint8(25); //s.getUint8(32)*256 + s.getUint8(33);
         gate_stop = s.getUint8(26)*256 + s.getUint8(27);  //s.getUint8(34)*256 + s.getUint8(35);
         echo_var = s.getUint8(28)*256 + s.getUint8(29);   //s.getUint8(36)*256 + s.getUint8(37);
@@ -257,72 +221,47 @@
     }
 
     function data_log_update() {
-      var status_str='';
-      var level_str='';
-      var dist_str='';
-
-        var textarea = document.getElementById('data-log');
+      var textarea = document.getElementById('data-log');
         textarea.value = "";
+        textarea.value += "Level\t\t= " + length_var.toFixed(3) + " m" + "\n";
+        textarea.value += "Distance\t\t= " + distance_var.toFixed(3) + " m" + "\n";
 
-        var lvlval = parseFloat(length_var);
-        var dstval = parseFloat(distance_var);
-
-        if(parseFloat(length_var) > 0){
-          level_str = "Lvl: " + length_var.toFixed(3) + " m" + "\n";
-        }
-
-        if(parseFloat(distance_var) > 0){
-          dist_str = "Dist: " + distance_var.toFixed(3) + " m" + "\n";
-        }
-
-        if (status_var != 999){
-
-              bit0 = status_var & 1;
-              bit1 = status_var & 2;
-              bit2 = status_var & 4;
-              bit3 = status_var & 8;
-              bit4 = status_var & 16;
-              bit5 = status_var & 32;
-              bit6 = status_var & 64;
-              bit7 = status_var & 128;
-              
-              if(status_var == 0)
-                status_str = "Status\t\t: OK\n\n";                        
-              else {
-                  if (bit4 == 16) {
-                      if (bit5 == 32)
-                          status_str = "Status\t\t: LOE fail high\n\n";
-                      else if (bit6 == 64)
-                          status_str = "Status\t\t: LOE fail low\n\n";
-                      else
-                          status_str += "Status\t\t: LOE fail\n\n";
-                  }
-                  else if (bit3 == 8)
-                      status_str= "Status\t\t: LOE\n\n";
-                  else if (bit2 == 4)
-                      status_str= "Status\t\t: Temp\n\n";
-                  else if (bit1 == 2)
-                      status_str= "Status\t\t: Voltage\n\n";
-                  else if (bit7 == 128)
-                      status_str= "Status\t\t: Alarm\n\n";
-                  else
-                      status_str= "Status\t\t: " + status_var + "\n\n";
-              }
-              document.getElementById("sensor_status").innerHTML = "<span style='font-sze:12px; background-colour: black;'>"+status_str+"</span>";
+        bit0 = status_var & 1;
+        bit1 = status_var & 2;
+        bit2 = status_var & 4;
+        bit3 = status_var & 8;
+        bit4 = status_var & 16;
+        bit5 = status_var & 32;
+        bit6 = status_var & 64;
+        bit7 = status_var & 128;
+        if(status_var == 0)
+            textarea.value += "Status\t\t= OK\n\n";                        
+        else {
+            if (bit4 == 16) {
+                if (bit5 == 32)
+                    textarea.value += "Status\t\t= LOE fail high\n\n";
+                else if (bit6 == 64)
+                    textarea.value += "Status\t\t= LOE fail low\n\n";
+                else
+                    textarea.value += "Status\t\t= LOE fail\n\n";
             }
-
-        
-        
-        document.getElementById("lvl").innerHTML = "<span style='font-sze:12px; background-colour: black;'>"+level_str+"</span>";
-        document.getElementById("dist").innerHTML = "<span style='font-sze:12px; background-colour: black;'>"+dist_str+"</span>";        
-        
+            else if (bit3 == 8)
+                textarea.value += "Status\t\t= LOE\n\n";
+            else if (bit2 == 4)
+                textarea.value += "Status\t\t= Temp\n\n";
+            else if (bit1 == 2)
+                textarea.value += "Status\t\t= Voltage\n\n";
+            else if (bit7 == 128)
+                textarea.value += "Status\t\t= Alarm\n\n";
+            else
+                textarea.value += "Status\t\t= " + status_var + "\n\n";
+        }
 
         textarea.value += "Volume\t\t= " + volume_var.toFixed(3) + " m³" + "\n";
         textarea.value += "Temperature\t= " + temperature_var.toFixed(2) + " °C" + "\n";
         textarea.value += "Noise\t\t= " + noise_var.toFixed(0) + " mV" + "\n";
-        textarea.value += "Output\t\t= " + mA_output_var.toFixed(2) + " mA";
-        
- 
+        textarea.value += "Output\t\t= " + mA_output_var.toFixed(2) + " mA";       
+
         textarea.scrollTop = textarea.scrollHeight;
     }
 
@@ -333,21 +272,8 @@
       let decoder = new TextDecoder('utf-8');
       // var checkBox = document.getElementById("myCheck");
       const doc_value = document.getElementById('cmd').value;
-      const string_check =  decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0','');
-//alert('incoming data');
-//alert(string_check);
-//alert(login_stage);
-      // if ((checkBox.checked == true) && (button_press == 8))
-      // {
-      //   var hex = Uint8tohex(readInValue);
-      //   if(doc_value == "GET ECHO")
-      //     log(" <- ECHO Received");
-      //   else if (doc_value == "GET DATEM")
-      //     log(" <- DATEM Received");
-      //   else
-      //     log(" <- " + hex);
-      // }
-      // else 
+      const string_check =  decoder.decode(readInValue).replace('\r','x').replace('\n','y').replace('\0','eeeez');      
+
       if ((button_press == 10) || (button_press == 11) || ((button_press == 8) && ((doc_value == "GET ECHO") || (doc_value == "GET DATEM"))))
       {
         var hex = Uint8tohex(readInValue);
@@ -363,27 +289,13 @@
             login_stage = 2;
             log(" <- Log in Success");
         }
-        else if(string_check.includes("Logged In Success") || (string_check.includes("OK")  && login_stage == 1)){
-          closeForm();
+        else if(string_check.includes("Logged In Success")){
           log(" <- Connected");
-           sendATL('AT+PT=1');
-           setTimeout(trace_button_check, 1000);
-        }
-        else if( ( string_check.includes("ERROR") || string_check.includes("Logged In failed")) && login_stage == 1 )
-        {
-            document.getElementById('lblpsw').innerHTML ='login failed';
-            document.getElementById('lblpsw').style.color = "red";
-            document.getElementById("pswbox").value='';
-            //alert(string_check);
-           // alert(login_stage);
-            openForm();
         }
         else{
-            // Log the incoming string (format slightly)
-              log(" <- " + decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0',''));   
-          
+          // Log the incoming string (format slightly)
+          log(" <- " + decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0',''));   
         }
-        
       }
     }
   
@@ -395,7 +307,6 @@
   
     async function bleDisconnect()
     {
-      closeForm();
       log("Disconnecting");
       if (device.gatt.connected) {
           device.gatt.disconnect();
@@ -427,7 +338,6 @@
 
     // Scan, connect and explore CodeLess BLE device
     async function ble_connect() {
-      closeForm();
       try {
         // Define a scan filter and prepare for interaction with Codeless Service
           log('Requesting Bluetooth Device...');
@@ -445,13 +355,13 @@
         flowcontrolChar.addEventListener('characteristicvaluechanged', incomingData);
         log('Ready to communicate!\n');
         login_stage = 1;
-        sendATL('AT+AUTH=123321'); //--> BB: commented
+        sendATL('AT+AUTH=123321');
         button_press = 3;
       }
       catch(error) {
         log('Failed: ' + error);
       }
-    }
+    }    
 
     // Send an AT command to the CodeLess BLE peer
     async function sendAT(cmd) {
@@ -569,6 +479,7 @@
   .navbar-default {
     background: transparent;
   }
+
   .container1{
     display: flex;
   }
@@ -592,7 +503,7 @@
     font-weight: bold;
     color: whitesmoke;
     /* font-family: "verdana"; */
-    font-size: 1.8em;
+    font-size: 1.4em;
     overflow: hidden;
   /*Hide content before animation*/
     /* border-right: .1em solid white; */
@@ -607,7 +518,8 @@
 .wrap{
     width:210px;    
 }
- 
+  </style>
+<style>
 /* Button used to open the contact form - fixed at the bottom of the page */
 .open-button {
   background-color: #555;
@@ -622,89 +534,62 @@
   width: 280px;
 }
 
- /* The popup form - hidden by default */
-  .form-popup {
-    display: none;
-    /* position: fixed; */
-    position: relative;    
-    right: 0px;
-    bottom: 0px;
-    top: 0px;
-    left: 0px;
-    width: 508px;
-    max-width: 600px;
-    border: 1px solid #03681cd0;
-    z-index: 9;
-  }
-  
-  /* Add styles to the form container */
-  .form-container {
-    max-width: 600px;
-    width: 505px;
-    padding: 10px;
-    background-color: white;
-  }
-  
-  /* Full-width input fields */
-  .form-container input[type=text], .form-container input[type=password] {
-    width: 100%;
-    padding: 15px;
-    margin: 5px 0 22px 0;
-    border: none;
-    background: #f1f1f1;
-  }
-  
-  /* When the inputs get focus, do something */
-  .form-container input[type=text]:focus, .form-container input[type=password]:focus {
-    background-color: #ddd;
-    outline: none;
-  }
-  
-  /* Set a style for the submit/login button */
-  .form-container .btn {
-    background-color: #04AA6D;
-    color: rgb(255, 255, 255);
-    padding: 16px 20px;
-    border: none;
-    cursor: pointer;
-    width: 50%;
-    margin-bottom:10px;
-    opacity: 0.8;    
-  }
-  
-  /* Add a red background color to the cancel button */
-  .form-container .cancel {
-    background-color: red;
-  }
-  
-  /* Add some hover effects to buttons */
-  .form-container .btn:hover, .open-button:hover {
-    opacity: 1;
-  }
+/* The popup form - hidden by default */
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+.form-container input[type=text], .form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
 
 </style>
 
-
-
-<script>
-  function openForm() {
-    document.getElementById("myForm").style.display = "block";
-  }
-
-  function sendLoginCmd() {
-    //alert("sendLoginCmd"+'AT+AUTH='+document.getElementById("pswbox").value);
-    sendATL('AT+AUTH='+document.getElementById("pswbox").value);
-  }
-  function closeForm2() {
-    document.getElementById('lblpsw').innerHTML ='';
-    document.getElementById('lblpsw').style.color = "black";
-  }
-  
-  function closeForm() {
-    
-    document.getElementById("myForm").style.display = "none";
-  }
-  </script>
 
     <noscript>
         <link rel="stylesheet" href="css/skel-noscript.css" />
@@ -738,10 +623,8 @@
 						<img src="./img/pulsarlogo-old.svg"  alt="Logo" style="width:200px;height:80px;border:none;text-decoration:none;color:#eeeeee00;">
 					</a>								
 				</div>
-            </div>
- 
+            </div>		
         </div>
- 
     </nav>
 </section>
 
@@ -756,39 +639,32 @@
 			<td align="center" style="padding:0;">
 			  <table role="presentation" style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;">
 				<tr>
-				  <td style="padding:30px;background-color:#656db3;">
+				  <td style="padding:30px;background-color:#4f5edd;">
 					<h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;color:white;letter-spacing:-0.02em;">Bluetooth Remote Access</h1>
 						<table>
                             <tr>
                                 <td><button type="button" class="button button-style1" onclick="ble_connect(); button_press = 1">Device Scan</button></td>
                                 <td><button type="button" class="button button-style1" onclick="bleDisconnect();  button_press = 2">End Session</button></td> 
-
-                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+AUTH=123321');  button_press = 3">Test-Login</button></td> -->
-                                <td><button type="button" class="button button-style1" onclick="openForm();  button_press = 3">Login</button></td>
+                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+PT=1');  button_press = 3">Login</button></td>  -->
+                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+AUTH=123321');  button_press = 3">Test-Login</button></td> 
+                                <td>Hex: <input type="checkbox" id="myCheck">
+                                <p id="text" style="display:none">Checkbox is CHECKED!</p></td>                -->
                             </tr>                    
 					    </table>
-
-           <div class="form-popup" id="myForm">
-              <form action="" class="form-container">
-                <!-- <h1>Login</h1> -->            
-                <!-- <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" name="email" required> -->            
-                <label for="psw" id="lblpsw" ><b>Passcode</b></label>
-                <input type="password" placeholder="Enter Passcode" id="pswbox" name="psw" required>            
-                <button type="button" class="btn" onclick=" sendLoginCmd(); closeForm2();  closeForm();">Login</button>
-                <!-- <button type="button" class="btn cancel" onclick="closeForm()">Close</button> -->
-              </form>
-            </div>
-
-					    <table>           
+					    <table>                    
                             <tr>
                                 <td>
                                   <textarea id="log" class="textarea" rows="8" cols="31" style="font-size: 10pt; font-weight: bold" readonly></textarea></td>
-                                <td>                                 
+                                <td>
+                                 
+                                  
+                                  
+                                  
+                                 
                                  <div class='wrap'>
-                                  <div class = "blocks" id='lvl'></div>
-                                  <div class = "blocks" id='dist'></div>
-                                  <div class = "blocks" id='sensor_status'></div>
+                                  <div class = "blocks">Level :  </div>
+                                  <div class = "blocks">Distance :</div>
+                                  <div class = "blocks">Status : OK </div>
                                   <textarea id="data-log" class="textarea1" rows="1" cols="1" style="font-size: 10pt; font-weight: bold" readonly></textarea>
                                 </div>
 
@@ -869,44 +745,7 @@
                                         ctx.strokeRect(x.getPixelForValue(gate_stop/5), top, 0, height);  // Gate stop (x.getPixelForValue((distance_var + 0.20)*200/7.2), top, 0, height)
                                         ctx.fillStyle = 'black';
                                         data_log_update();                  
-                                        // ctx.fillText("Length          = " + length_var.toFixed(3) + " m", x.getPixelForValue(140), top+10); // Dynamic variables
-                                        // ctx.fillText("Distance       = " + distance_var.toFixed(3) + " m", x.getPixelForValue(140), top+20);
-                                        // ctx.fillText("Volume         = " + volume_var.toFixed(3) + " m³", x.getPixelForValue(140), top+30);
-                                        // ctx.fillText("Temperature = " + temperature_var.toFixed(2) + " °C", x.getPixelForValue(140), top+40);
-                                        // ctx.fillText("Noise            = " + noise_var.toFixed(0) + " mV", x.getPixelForValue(140), top+50);
-                                        // ctx.fillText("Output          = " + mA_output_var.toFixed(2) + " mA", x.getPixelForValue(140), top+60);
-                                        // bit0 = status_var & 1;
-                                        // bit1 = status_var & 2;
-                                        // bit2 = status_var & 4;
-                                        // bit3 = status_var & 8;
-                                        // bit4 = status_var & 16;
-                                        // bit5 = status_var & 32;
-                                        // bit6 = status_var & 64;
-                                        // bit7 = status_var & 128;
-                                        // if(status_var == 0)
-                                        //     ctx.fillText("Status           = OK", x.getPixelForValue(140), top+80);
-                                        // else
-                                        // {
-                                        // if (bit4 == 16)
-                                        // {
-                                        //     if (bit5 == 32)
-                                        //         ctx.fillText("Status           = LOE fail high", x.getPixelForValue(140), top+80);
-                                        //     else if (bit6 == 64)
-                                        //         ctx.fillText("Status           = LOE fail low", x.getPixelForValue(140), top+80);
-                                        //     else
-                                        //         ctx.fillText("Status           = LOE fail", x.getPixelForValue(140), top+80);
-                                        // }
-                                        // else if (bit3 == 8)
-                                        //     ctx.fillText("Status           = LOE", x.getPixelForValue(140), top+80);
-                                        // else if (bit2 == 4)
-                                        //     ctx.fillText("Status           = Temp", x.getPixelForValue(140), top+80);
-                                        // else if (bit1 == 2)
-                                        //     ctx.fillText("Status           = Voltage", x.getPixelForValue(140), top+80);
-                                        // else if (bit7 == 128)
-                                        //     ctx.fillText("Status           = Alarm", x.getPixelForValue(140), top+80);
-                                        // else
-                                        //     ctx.fillText("Status           = " + status_var, x.getPixelForValue(140), top+80);
-                                        // }
+                                        
                                         ctx.restore();
                                     }
                                 }
@@ -991,41 +830,15 @@
                                         CLEAR
                                     </button>
                                 </td>   
-                            </tr>
-                            <!-- <tr>
-                                <td>
-                                    <button type="button" class="button" onclick="sendAT('ATrI'); button_press = 4">
-                                        Version
-                                    </button>
-                                </td>
-                                <td></td>
-                                 <td>
-                                    <button type="button" class="button" onclick="sendAT('AT+PT=1'); button_press = 5">
-                                        Enter PT
-                                    </button>
-                                </td>  
-                                  <td>
-                                    <button type="button" class="button" onclick="sendAT('GET ECHO'); button_press = 10">
-                                        GET ECHO
-                                    </button>
-                                </td>               
-                            </tr> -->
+                            </tr>                          
                             <tr>
-                                <!-- <td>
-                                    <button type="button" class="button" onclick="trace_button_check();">
-                                        TRACE ON
-                                    </button>
-                                </td> -->                                
+                             
                                 <td>
-                                    <button type="button"  class="button" onclick="sendAT('AT+PT=0'); trace_off();">
+                                    <button type="button"  class="button" onclick="trace_off();">
                                         TRACE OFF
                                     </button>
                                 </td>
-                                <!-- <td>
-                                    <button type="button" class="button" onclick="sendAT('GET DATEM'); button_press = 11">
-                                        GET DATEM
-                                    </button>
-                                </td>                  						 -->
+
                             </tr>
 					    </table>
 				    </td>
