@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pulsar Bluetooth Remote Access</title>
+    <noscript>
+        <link rel="stylesheet" href="css/skel-noscript.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/style-desktop.css" />
+        <link rel="stylesheet" href="js1/style.css" />
+    </noscript>
+
+<script>
+  var waveBtn = (function () {
+  'use strict';
+  var btn = document.querySelectorAll('.wave'),
+      tab = document.querySelector('.tab-bar'),
+      indicator = document.querySelector('.indicator'),
+      indi = 0;
+  indicator.style.marginLeft = indi + 'px';
+
+  for(var i = 0; i < btn.length; i++) {
+    btn[i].onmousedown = function (e) {
+      var newRound = document.createElement('div'),x,y;
+
+      newRound.className = 'cercle';
+      this.appendChild(newRound);
+
+      x = e.pageX - this.offsetLeft;
+      y = e.pageY - this.offsetTop;
+
+      newRound.style.left = x + "px";
+      newRound.style.top = y + "px";
+      newRound.className += " anim";
+
+      indicator.style.marginLeft = indi + (this.dataset.num-1) * 150 + 'px';
+
+      setTimeout(function() {
+        newRound.remove();
+      }, 1200);
+    };
+  }
+}());
+</script>    
+<script>
+    
+
+
+  </script>
+
+  <style>
+     
+	</style>
+  <style>
+  .navbar {
+    /* background: white; */
+    background-color: #00FFCC;
+    background-image: none;
+    width: 100%;
+    height: 100px;
+    position: static;
+    top: 0;
+    left: 0;
+  }
+  .navbar-default {
+    background: transparent;
+  }
+  .container1{
+    display: flex;
+  }
+  .fixed{
+      width: 200px;
+  }
+  .flex-item{
+      flex-grow: 1;
+  }
+
+  .blocks {
+    display: inline-block; 
+    /* border: solid 2px red;    */
+    padding: 16px 20px;
+    display: flex;
+      align-items: left;
+      justify-content: left;
+      margin: 0 auto;
+    height:50px; 
+    width: 300px;
+    font-weight: bold;
+    color: whitesmoke;
+    /* font-family: "verdana"; */
+    font-size: 1.8em;
+    overflow: hidden;
+  /*Hide content before animation*/
+    /* border-right: .1em solid white; */
+  /*Cursor*/
+    white-space: nowrap;
+  /*Keep text on same line*/
+    margin: 0 auto;
+  /*Scrolling effect while typing*/
+    letter-spacing: .1em;
+    animation: typing 3s steps(30, end), blink-caret .75s steps(1, end) infinite alternate;    
+  }
+.wrap{
+    width:210px;    
+}
+ 
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+ /* The popup form - hidden by default */
+  .form-popup {
+    display: none;
+    /* position: fixed; */
+    position: relative;    
+    right: 0px;
+    bottom: 0px;
+    top: 0px;
+    left: 0px;
+    width: 508px;
+    max-width: 600px;
+    border: 1px solid #03681cd0;
+    z-index: 9;
+  }
+  
+  /* Add styles to the form container */
+  .form-container {
+    max-width: 600px;
+    width: 505px;
+    padding: 10px;
+    background-color: white;
+  }
+  
+  /* Full-width input fields */
+  .form-container input[type=text], .form-container input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    border: none;
+    background: #f1f1f1;
+  }
+  
+  /* When the inputs get focus, do something */
+  .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+  
+  /* Set a style for the submit/login button */
+  .form-container .btn {
+    background-color: #04AA6D;
+    color: rgb(255, 255, 255);
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 50%;
+    margin-bottom:10px;
+    opacity: 0.8;    
+  }
+  
+  /* Add a red background color to the cancel button */
+  .form-container .cancel {
+    background-color: red;
+  }
+  
+  /* Add some hover effects to buttons */
+  .form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+  }
+
+ 
+</style>
+<!--  added end -->
+
+
+
+<script>
+ 
+  </script>
+
+    <noscript>
+        <link rel="stylesheet" href="css/skel-noscript.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/style-desktop.css" />
+    </noscript>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+	<link href="css/element.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Jura" rel="stylesheet">
+	<script src="js/jquery-2.1.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="./js/ekko-lightbox.js"></script>
+  <script src="js1/script.js"></script>
+  <link rel="icon" type="image/x-icon" href="./img/pulsaricon-rgb64_2.png" /> 
+  </head>
+<body>
+ 
+ 
+
+<section class="accordion">
+  <section class="accordion-tabs">
+    <button class="accordion-tab accordion-active" data-actab-group="0" data-actab-id="0">Tab 1</button>
+    <button class="accordion-tab" data-actab-group="0" data-actab-id="1">Tab 2</button>
+    <button class="accordion-tab" data-actab-group="0" data-actab-id="2">Tab 3</button>
+    <button class="accordion-tab" data-actab-group="0" data-actab-id="3">Tab 4</button>
+    <button class="accordion-tab" data-actab-group="0" data-actab-id="4">Tab 5</button>
+  </section>
+  <section class="accordion-content">
+    <article class="accordion-item accordion-active" data-actab-group="0" data-actab-id="0">
+      <h4 class="accordion-item__label">Tab 1</h4>
+      <div class="accordion-item__container">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates, deserunt minima? Ut facere minus, ipsa dolore animi quis alias eos, porro corporis quod esse quidem. Maxime a aperiam perspiciatis architecto?</p>
+      </div>
+    </article>
+    <article class="accordion-item" data-actab-group="0" data-actab-id="1">
+      <h4 class="accordion-item__label">Tab 2</h4>
+      <div class="accordion-item__container">
+        <p>reprehenderit temporibus, assumenda cupiditate consequatur soluta odit ex repudiandae delectus cumque, provident hic sed quod? Quis, nam. Similique eaque quae vel recusandae expedita qui sint fugiat, nisi assumenda et ex molestiae atque deleniti magni, ipsam libero!</p>
+      </div>
+    </article>
+    <article class="accordion-item" data-actab-group="0" data-actab-id="2">
+      <h4 class="accordion-item__label">Tab 3</h4>
+      <div class="accordion-item__container">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates, deserunt minima? Ut facere minus, ipsa dolore animi quis alias eos, porro corporis quod esse quidem. Maxime a aperiam perspiciatis architecto?</p>
+      </div>
+    </article>
+    <article class="accordion-item" data-actab-group="0" data-actab-id="3">
+      <h4 class="accordion-item__label">Tab 4</h4>
+      <div class="accordion-item__container">
+        <p>psum dolor sit amet, consectetur adipisicing elit. Voluptates, deserunt minima? Ut facere minus, ipsa dolore</p>
+      </div>
+    </article>
+    <article class="accordion-item" data-actab-group="0" data-actab-id="4">
+      <h4 class="accordion-item__label">Tab 5</h4>
+      <div class="accordion-item__container">
+        <p>aborum similique facere quae. Quo cupiditate ad iste qui aliquam quibusdam quod, ut doloremque ipsa quas soluta, sapiente possimus, tempora rerum ab nesciunt vitae molestiae dolor earum illum repudiandae! Voluptas sed, soluta facere nisi perferendis cupiditate! Dicta et praesentium non ab, quod commodi, illo saepe accusantium tempora autem eos nemo. Animi, pariatur placeat laudantium dolorib!</p>
+      </div>
+    </article>
+  </section>
+</section>
+
+</body>       
+</html>

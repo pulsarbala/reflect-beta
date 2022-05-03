@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pulsar Bluetooth Remote Access</title>
+    <noscript>
+        <link rel="stylesheet" href="css/skel-noscript.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/style-desktop.css" />
+    </noscript>
+<script>
+    var inboundChar;
+    var outboundChar;
+    var device;
+    
+    // Define the CodeLess UUIDs 
+    var CODELESS_SVC_UUID 	= "866d3b04-e674-40dc-9c05-b7f91bec6e83";
+    var INBOUND_CHAR_UUID 	= "914f8fb9-e8cd-411d-b7d1-14594de45425";
+    var OUTBOUND_CHAR_UUID 	= "3bb535aa-50b2-4fbe-aa09-6b06dc59a404";
+    var CNTRL_CHAR_UUID		= "e2048b39-d4f9-4a45-9f25-1856c10d5639";
+  
+    let options = {
+        filters: [
+        {name: 'PULS'},
+        {name: 'PULS-BT'},
+        {name: 'CLv2'},					
+        {name: 'ABCa'},
+        {name: 'ABC1'},
+        {name: 'PMBT'},
+		{name: 'ABC1'},
+		{name: 'PULSARBT'},
+		{name: 'PULSAR-BT'},
+		{name: 'CodeLess'},		
+        {name: 'Example1'},
+        {name: 'Example2'},
+        {name: 'Example3'},
+        {name: 'Example4'},
+        {name: 'Example5'},
+        {name: 'Example6'},
+        {name: 'Example7'},
+        {name: 'Example8'},
+        {name: 'Example9'},
+        {name: 'CodeLess'},        
+        {services: [CODELESS_SVC_UUID]}
+        ],
+        optionalServices: [CODELESS_SVC_UUID]
+    }
+  
+    // Global variables
+    var button_press = 0;
+    var length_var, distance_var, volume_var, compensated_var, mA_output_var, temperature_var, date_var, time_var, gate_start, gate_stop, echo_var, noise_var, status_var, near_blanking_var, far_blanking_var, empty_distance, mode_var, bit0, bit1, bit2, bit3, bit4, bit5, bit6, bit7;
+    length_var = 0.000;//4.346;
+    distance_var = 0.000;//1.654;
+    volume_var = 0.000;//2.370;
+    compensated_var = 7.2;
+    mA_output_var = 0.000;//20.000;
+    temperature_var = 0.000;//20.000;
+    date_var = 190100.000;
+    time_var = 2210.000;
+    gate_start = 0;//202;
+    gate_stop = 0;//258;
+    echo_var = 0;//45;
+    noise_var = 0;//30;
+    status_var = 999;
+    near_blanking_var = 0.3;
+    far_blanking_var = 20.0;//6.0;
+    far_blanking_dist = 7.2;
+    empty_distance = 6.0;
+    mode_var = 6.0;
+
+    // set interval
+    var echo_tid;
+    var datem_tid;
+    var isDisconnecting=0;
+
+    var login_stage = 0;    // Login status
+
+    function echo_start() {
+     
+    }
+
+    function datem_start() {
+        
+    }
+
+    function trace_button_check() {
+      
+    }
+
+    function trace_off() {
+ 
+    }
+
+    function enter_button_check() {
+        
+    }
+
+    // Display text in log field text area 
+    function log(text)
+    {
+ 
+    }
+
+    // Clears text in log field text area 
+    function clearlog()
+    {
+ 
+    }    
+  
+    const utf8encoder = new TextEncoder();
+    const windows1251 = new TextEncoder();
+
+    function utf8ToHex(s)
+    {
+      
+    } 
+
+    // Function to flip the hex string (if needed)
+    function flipHexString(hexValue, hexDigits) {
+      
+    }
+
+    // Function to convert Hex values to float (Need Hex string to start with 0x)
+    function hexToFloat(hex) {
+       
+    }
+
+    // Function to convert unsigned int 8 bit format to hex and relevant functions within it
+    function Uint8tohex(s)
+    {
+       
+    }
+
+    function data_log_update() {
+       
+    }
+
+    // Incoming GATT notification was received
+    async function incomingData(event){
+    
+    }
+  
+    async function onDisconnected()
+    {
+      log("Bluetooth connection terminated!");
+
+    }
+    
+    async function bleTDisconnect()
+    {
+      if (device.gatt.connected) {
+          device.gatt.disconnect();
+      }
+      else {
+         
+      }
+      button_press=0;
+      login_stage = 0;
+      isDisconnecting=0; // completed
+    }
+
+  
+    async function bleDisconnect()
+    {
+
+      trace_off();      
+      sendATL('AT+PT=0'); //--> BB: commented
+      closeForm();
+      log(" -> Disconnecting");
+      isDisconnecting=1;
+      setTimeout(bleTDisconnect,3000);
+    }
+  
+
+
+  // Send an AT command to the CodeLess BLE peer
+  async function sendATL(cmd) {
+     
+    }
+
+    // Scan, connect and explore CodeLess BLE device
+    async function ble_connect() {
+      closeForm();
+      try {
+        // Define a scan filter and prepare for interaction with Codeless Service
+          log('Requesting Bluetooth Device...');
+          device = await navigator.bluetooth.requestDevice(options);
+          log('Name: ' + device.name);
+  
+        device.addEventListener('gattserverdisconnected', onDisconnected);	
+        // Connect to device GATT and perform attribute discovery
+        server = await device.gatt.connect();
+        const service = await server.getPrimaryService(CODELESS_SVC_UUID);
+        inboundChar = await service.getCharacteristic(INBOUND_CHAR_UUID);
+        outboundChar = await service.getCharacteristic(OUTBOUND_CHAR_UUID);
+        const flowcontrolChar = await service.getCharacteristic(CNTRL_CHAR_UUID);
+        await flowcontrolChar.startNotifications();
+        flowcontrolChar.addEventListener('characteristicvaluechanged', incomingData);
+        log('Ready to communicate!\n');
+        login_stage = 1;
+        sendATL('AT+AUTH=123321'); //--> BB: commented
+        // sendATL('AT+AUTH=123654'); //--> BB: commented
+        button_press = 3;
+      }
+      catch(error) {
+        log('Failed: ' + error);
+      }
+    }
+
+    // Send an AT command to the CodeLess BLE peer
+    async function sendAT(cmd) {
+ 
+    }
+    // If enter key was pressed by user while editing, send command immediately
+    function wasEnter(elem) {
+ 
+    }
+
+
+
+  </script>
+
+  <style>
+    table, td, div, h1, p {
+      font-family: Arial, sans-serif;
+    }
+    @media screen and (max-width: 530px) {
+      .unsub {
+        display: block;
+        padding: 8px;
+        margin-top: 14px;
+        border-radius: 6px;
+        background-color: #f8eded;
+        text-decoration: none !important;
+        font-weight: bold;
+      }
+      .col-lge {
+        max-width: 100% !important;
+      }
+    }
+    @media screen and (min-width: 531px) {
+      .col-sml {
+        max-width: 27% !important;
+      }
+      .col-lge {
+        max-width: 73% !important;
+      }
+    }
+  </style>
+  <style>
+	.button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+	    /* padding: 15px 32px; */
+        height:50px;
+        width:165px;
+        /* width:160px; */
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 8px;
+	}
+	.textarea {
+        background-color: white;
+        border: none;
+        /* color: white; */
+        /* padding: 10px 30px; */
+        height:  248px;
+        width: 273px;
+        text-align: left;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin: 4px 2px;
+        cursor: pointer;
+        resize: none;
+	}
+	.textarea1 {
+        background-color: white;
+        border: none;
+        /* color: white; */
+        /* padding: 10px 30px; */
+        height:  100px;
+        width: 273px;
+        text-align: left;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin: 4px 2px;
+        cursor: pointer;
+        resize: none;
+	}  
+	</style>
+  <style>
+  .navbar {
+    /* background: white; */
+    background-color: #00FFCC;
+    background-image: none;
+    width: 100%;
+    height: 100px;
+    position: static;
+    top: 0;
+    left: 0;
+  }
+  .navbar-default {
+    background: transparent;
+  }
+  .container1{
+    display: flex;
+  }
+  .fixed{
+      width: 200px;
+  }
+  .flex-item{
+      flex-grow: 1;
+  }
+
+  .blocks {
+    display: inline-block; 
+    /* border: solid 2px red;    */
+    padding: 16px 20px;
+    display: flex;
+      align-items: left;
+      justify-content: left;
+      margin: 0 auto;
+    height:50px; 
+    width: 300px;
+    font-weight: bold;
+    color: whitesmoke;
+    /* font-family: "verdana"; */
+    font-size: 1.8em;
+    overflow: hidden;
+  /*Hide content before animation*/
+    /* border-right: .1em solid white; */
+  /*Cursor*/
+    white-space: nowrap;
+  /*Keep text on same line*/
+    margin: 0 auto;
+  /*Scrolling effect while typing*/
+    letter-spacing: .1em;
+    animation: typing 3s steps(30, end), blink-caret .75s steps(1, end) infinite alternate;    
+  }
+.wrap{
+    width:210px;    
+}
+ 
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+ /* The popup form - hidden by default */
+  .form-popup {
+    display: none;
+    /* position: fixed; */
+    position: relative;    
+    right: 0px;
+    bottom: 0px;
+    top: 0px;
+    left: 0px;
+    width: 508px;
+    max-width: 600px;
+    border: 1px solid #03681cd0;
+    z-index: 9;
+  }
+  
+  /* Add styles to the form container */
+  .form-container {
+    max-width: 600px;
+    width: 505px;
+    padding: 10px;
+    background-color: white;
+  }
+  
+  /* Full-width input fields */
+  .form-container input[type=text], .form-container input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    border: none;
+    background: #f1f1f1;
+  }
+  
+  /* When the inputs get focus, do something */
+  .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+  
+  /* Set a style for the submit/login button */
+  .form-container .btn {
+    background-color: #04AA6D;
+    color: rgb(255, 255, 255);
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 50%;
+    margin-bottom:10px;
+    opacity: 0.8;    
+  }
+  
+  /* Add a red background color to the cancel button */
+  .form-container .cancel {
+    background-color: red;
+  }
+  
+  /* Add some hover effects to buttons */
+  .form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+  }
+
+</style>
+
+
+
+<script>
+  function openForm() {
+    document.getElementById("myForm").style.display = "block";
+  }
+
+  function sendLoginCmd() {
+    //alert("sendLoginCmd"+'AT+AUTH='+document.getElementById("pswbox").value);
+    sendATL('AT+AUTH='+document.getElementById("pswbox").value);
+  }
+  function closeForm2() {
+    document.getElementById('lblpsw').innerHTML ='';
+    document.getElementById('lblpsw').style.color = "black";
+  }
+  
+  function closeForm() {
+    
+    document.getElementById("myForm").style.display = "none";
+  }
+  </script>
+
+    <noscript>
+        <link rel="stylesheet" href="css/skel-noscript.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/style-desktop.css" />
+    </noscript>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+	<link href="css/element.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Jura" rel="stylesheet">
+	<script src="js/jquery-2.1.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="./js/ekko-lightbox.js"></script>
+  <link rel="icon" type="image/x-icon" href="./img/pulsaricon-rgb64_2.png" /> 
+  </head>
+<body>
+<section id="header">
+	<nav class="navbar navbar-default ">		
+        <div class="container">			
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+				<div class="logo">
+					<a href="http://www.pulsarmeasurement.com" style="text-decoration:none;">
+						<img src="./img/pulsarlogo-old.svg"  alt="Logo" style="width:200px;height:80px;border:none;text-decoration:none;color:#eeeeee00;">
+					</a>								
+				</div>
+            </div>
+ 
+        </div>
+ 
+    </nav>
+</section>
+
+<section id="center">
+ <div class="container">
+  <div class="row">	
+		<!-- <h1>BOOKING STARTS </h1> -->
+   <div class="center clearfix">
+	<div>   
+		<table role="presentation" style="width:100%;border:none;border-spacing:0;">
+		  <tr>
+			<td align="center" style="padding:0;">
+			  <table role="presentation" style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;">
+				<tr>
+				  <td style="padding:30px;background-color:#656db3;">
+					<h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;color:white;letter-spacing:-0.02em;">Bluetooth Remote Access</h1>
+						<table>
+                            <tr>
+                                <td><button type="button" class="button button-style1" onclick="ble_connect(); button_press = 1">Device Scan</button></td>
+                                <td><button type="button" class="button button-style1" onclick="bleDisconnect();  button_press = 2">End Session</button></td> 
+
+                                <!-- <td><button type="button" class="button button-style1" onclick="sendATL('AT+AUTH=123321');  button_press = 3">Test-Login</button></td> -->
+                                <!-- <td><button type="button" class="button button-style1" onclick="openForm();  button_press = 3">Login</button></td> -->
+                            </tr>                    
+					    </table>
+
+           <div class="form-popup" id="myForm">
+              <form action="" class="form-container">
+                <!-- <h1>Login</h1> -->            
+                <!-- <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email" required> -->            
+                <label for="psw" id="lblpsw" ><b>Passcode</b></label>
+                <input type="password" placeholder="Enter Passcode" id="pswbox" name="psw" required>            
+                <button type="button" class="btn" onclick=" sendLoginCmd(); closeForm2();  closeForm();">Login</button>
+                <!-- <button type="button" class="btn cancel" onclick="closeForm()">Close</button> -->
+              </form>
+            </div>
+
+                       
+				    </td>
+				</tr>
+			 
+				<tr>
+                    <td style="padding:30px;text-align:center;font-size:12px;background-color:#d1c6c6;color:#2e2323;">
+                        <p style="margin:0;font-size:14px;line-height:20px;">&copy; Pulsar Measurement 2022<br></p>
+                    </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+   </div>
+  </div>
+ </div>
+</section>
+</body>       
+</html>
