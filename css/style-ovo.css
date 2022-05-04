@@ -8,21 +8,27 @@ body {
   background-size: cover;
 }
 h1 {
-  font-size: 48px;
-  color: #232c3d;
+  font-size: 44px;
+  font-family: Arial, sans-serif;
+  color: #ffffff;
 }
 
-.wrapper {
+.wrapper {  
   width: 900px;
   margin: auto;
-  background-color: #747bbe;;
+  background-color: #747bbe;  
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, .1);
 }
 
 .buttonWrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 20fr 20fr 20fr;
+}
+
+.buttonWrapper1 {
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr;
 }
 
 button {
