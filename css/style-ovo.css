@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@100;300;400;700&display=swap');
 
 body {
-  text-align: center;
-  font-family: 'Jost', sans-serif;
-  background-color: #f0f5ff;
+  background: url(../img/pexels-photo-2259232.jpeg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
-
 h1 {
   font-size: 48px;
   color: #232c3d;
@@ -14,7 +15,7 @@ h1 {
 .wrapper {
   width: 900px;
   margin: auto;
-  background-color: white;
+  background-color: #747bbe;;
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, .1);
 }
@@ -54,7 +55,9 @@ p {
 
 .content {
   display: none;
-  padding: 10px 20px;
+  padding: 40px 40px;
+  top: 10px;
+  height:820px;
 }
 
 .content.active {
