@@ -182,6 +182,7 @@
 
 	#logo
 	{
+		cursor: pointer;
 		display: none;
 	}
 	

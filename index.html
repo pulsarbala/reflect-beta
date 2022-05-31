@@ -707,6 +707,10 @@
 var uagent = navigator.userAgent.toLowerCase();
   log("Please click on the 'Device scan' to scan\n"+uagent);
 
+  var browserZoomLevel = Math.round(window.devicePixelRatio * 100);
+  alert(browserZoomLevel);
+
+
 }
   </script>
 

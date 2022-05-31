@@ -1,5 +1,6 @@
-.accordion {
-  background: #f9f9f9;
+.accordion { 
+  background: #365072;
+  min-width: 940px;
 }
 .accordion-tabs {
   display: none;
@@ -32,7 +33,7 @@
   border: 3px solid transparent;
   border-radius: 2px;
   transform: rotate(45deg);
-  border-color: transparent #447fff #447fff transparent;
+  border-color: transparent #ff4444 #ff4444 transparent;
   opacity: 1;
   transition: opacity 0.1s ease;
 }
@@ -71,10 +72,18 @@
   margin-bottom: 0;
 }
 
-@media (min-width: 1920px) {
+
+
+
+@media (min-width: 600px) {
   .accordion-tabs {
     display: flex;
-    background: rgba(68, 127, 255, 0.1);
+    background: rgb(21, 190, 240);  /* Cyan */
+    color: rgb(0, 0, 0);
+    font-weight:bold;
+    /* font-size:20px; */
+    font-size: 2.9rem;
+    margin-top: 2rem;
   }
   .accordion-tabs .accordion-tab {
     background: rgba(68, 127, 255, 0.1);
@@ -92,16 +101,21 @@
     border-right: 0;
   }
   .accordion-tabs .accordion-tab.accordion-active {
-    background: #f9f9f9;
+    /* background: #6b7d80d5; */
+    /* background: rgb(155, 156, 160);*/ /* Gray  */
+    background: rgb(228, 236, 237); /*  Platinum  */
   }
 
+  
   .accordion-item {
     padding: 2.4rem;
     display: none;
     border: none;
-    background: #f9f9f9;
-    min-width: 1920px;
-    min-height: 1260px;
+    /* background: #668992; */
+    /* background: rgb(155, 156, 160);*/ /* Gray  */
+    background: rgb(228, 236, 237); /*  Platinum  */
+    min-height:1260px;  /*change here for the content width and height */
+    min-width: 1340px;
   }
   .accordion-item__label, .accordion-item__container {
     padding: 0;
@@ -125,12 +139,13 @@
   box-shadow: 0 1em 2em -0.9em rgba(0, 0, 0, 0.7);
   border-radius: 10px;
   overflow: hidden;
-  width: 100%;
-  max-width: 1920px;
+  width: 200%;
+  max-width: 740px;
 }
-@media (min-width: 1920px) {
+@media (min-width: 600px) {
   .accordion {
-    max-width: 1920px;
+    max-width: 740px;
+    
   }
 }
 .accordion + p {
@@ -140,13 +155,24 @@
   margin-top: 2rem;
 }
 
-
 body {
-  background: url(../img/pexels-photo-2259232.jpeg) no-repeat center center fixed;
+  /* background: #3b70fc; */
   display: flex;
   flex-direction: column;
   font-size: 1rem;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 120vh; 
 }
+
+
+#logo1
+{
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 300;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+  cursor: pointer;
+}
+
+
