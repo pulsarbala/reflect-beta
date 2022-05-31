@@ -116,11 +116,9 @@ function sleep(ms) {
     var p104_tid;
     var p605_tid;
     var isDisconnecting=0;
-    var isTerminated=0;
 
     var login_stage = 0;    // Login status
-
-    // Function to select the volume units to be displayed depending on p605 value
+// Function to select the volume units to be displayed depending on p605 value
     function p605_volume_units() {
       switch(p605_units_val) {
         default:
@@ -229,11 +227,10 @@ function sleep(ms) {
         clearTimeout(p104_tid);
         clearTimeout(p605_tid);
     } else {
-        // clearTimeout(p104_tid);
-        // clearTimeout(p605_tid);
-        // clearTimeout(echo_tid);
-        // clearTimeout(datem_tid);
-        tids_trace_reset();
+        clearTimeout(p104_tid);
+        clearTimeout(p605_tid);
+        clearTimeout(echo_tid);
+        clearTimeout(datem_tid);
       }
     }
     function datem_start() {
@@ -245,100 +242,83 @@ function sleep(ms) {
             clearTimeout(p104_tid);
             clearTimeout(p605_tid);
         } else {
-            // clearTimeout(p104_tid);
-            // clearTimeout(p605_tid);
-            // clearTimeout(echo_tid);
-            // clearTimeout(datem_tid);
-            tids_trace_reset();
+            clearTimeout(p104_tid);
+            clearTimeout(p605_tid);
+            clearTimeout(echo_tid);
+            clearTimeout(datem_tid);
         }
     }
 
     function p104_start() {
       if(login_stage == 4) {
             sendAT('/P104');
-            button_press = 14;
-            // p104_tid = setInterval(p104_start, 5000);
+            button_press = 11;
+            p104_tid = setInterval(p104_start, 5000);
             clearTimeout(p605_tid);
             clearTimeout(echo_tid);
             clearTimeout(datem_tid);
         } else {
-            // clearTimeout(p104_tid);
-            // clearTimeout(p605_tid);
-            // clearTimeout(echo_tid);
-            // clearTimeout(datem_tid);
-            tids_trace_reset();
+            clearTimeout(p104_tid);
+            clearTimeout(p605_tid);
+            clearTimeout(echo_tid);
+            clearTimeout(datem_tid);
         }      
     }
 
     function p605_start() {
       if(login_stage == 4) { // TRACE ON state  
             sendAT('/P605');
-            button_press = 15;
-            // p605_tid = setInterval(p605_start, 5000);
+            button_press = 11;
+            p605_tid = setInterval(p605_start, 5000);
             clearTimeout(p104_tid);
             clearTimeout(echo_tid);
             clearTimeout(datem_tid);
         } else {
-            // clearTimeout(p104_tid);
-            // clearTimeout(p605_tid);
-            // clearTimeout(echo_tid);
-            // clearTimeout(datem_tid);
-            tids_trace_reset();
+            clearTimeout(p104_tid);
+            clearTimeout(p605_tid);
+            clearTimeout(echo_tid);
+            clearTimeout(datem_tid);
         }      
     }
 
     function trace_button_check() {
       //log("trace_button_check :"+login_stage);
-        if(login_stage == 3 /*|| login_stage == 1*/ || login_stage == 2) {
+        if(login_stage == 3 || login_stage == 1 || login_stage == 2) {
           if(isDisconnecting == 0){
-              log(' 🡺 Getting trace data');//log(' <- TRACE ON');
-              // sendAT('GET ECHO');
+              log(' <- TRACE ON');
+              sendAT('GET ECHO');
               document.getElementById("id_trace").click();
-              // button_press = 10;
-              // datem_tid = setInterval(datem_start, 5000);
-              // clearTimeout(echo_tid); 
-
-              //sendAT('/P104');
-              p104_tid = setInterval(p104_start, 1000);//5000);
-              clearTimeout(p605_tid);
-              clearTimeout(echo_tid);
-              clearTimeout(datem_tid);
-              button_press = 14;
-
+              button_press = 10;
+              datem_tid = setInterval(datem_start, 5000);
+              clearTimeout(echo_tid); 
               login_stage = 4; // TRACE ON state
               isTraceOn=1;
-			        isIgnore_2=2; // NEED TO CHECK
+			  isIgnore_2=2;
           }
         } else {
           log('Device not in Normal mode!');//log('Device not in passthrough mode!');
         }
     }
     function Normal_mode() {
-        if(login_stage >= 3) { // currently in PT mode
+        if(login_stage == 3){
           sendAT('AT+PT=0');
-          // clearTimeout(echo_tid);
-          // clearTimeout(datem_tid);
-          tids_trace_reset();
-          // log(' <- AT+PT=0');
+          clearTimeout(echo_tid);
+          clearTimeout(datem_tid);
+          log(' <- AT+PT=0');
           login_stage = 2;//3; // back to the PT mode
           document.getElementById('btn_mode').innerHTML ='NORMAL MODE';
           // isIgnore=0;
           // isTraceOn=1;
           isIgnore=1;          
         }
-        else if (login_stage == 2) { // currently in AT mode
+        else{
           login_stage = 3;
-          clearTimeout(p104_tid);
-          clearTimeout(p605_tid);
           clearTimeout(echo_tid);
           clearTimeout(datem_tid);
           sendATL('AT+PT=1');
           //setTimeout(trace_button_check, 1000);
-          //log(' <- AT+PT=1');
+          log(' <- AT+PT=1');
           document.getElementById('btn_mode').innerHTML ='AT MODE';
-        }
-        else  {
-          log('No device connected!');
         }
     }
 
@@ -353,55 +333,37 @@ function sleep(ms) {
 
     function trace_off() {  
       //alert("trace_off: isTraceOn="+isTraceOn);
-      if(login_stage >= 3) {
-        if(isTraceOn==1){
-          // sendAT('TRACE OFF');
-          // document.getElementById('btn_trace').innerHTML ='TRACE ON';
-          // clearTimeout(echo_tid);
-          // clearTimeout(datem_tid);
-          tids_trace_reset();
-          log(' 🡺 Stopping trace data');//log(' <- TRACE OFF');
-          login_stage = 3; // back to the PT mode
-          isTraceOn=0;
-          isIgnore=1;
-        }else{
-          // start the static timers
-          document.getElementById('btn_trace').innerHTML ='TRACE OFF';
-          login_stage = 3;
-          clearTimeout(echo_tid);
-          clearTimeout(datem_tid);
-          // sendAT('TRACE ON');
-          isTraceOn=1;
-          trace_button_check();
-  //        isTraceOn=0;
-        }
-      } else {
-          log('Device not in Normal mode!');//log('Device not in passthrough mode!');
-      }
+      if(isTraceOn==1){
+        // sendAT('TRACE OFF');
+        document.getElementById('btn_trace').innerHTML ='TRACE ON';
+        clearTimeout(echo_tid);
+        clearTimeout(datem_tid);
+        log(' <- TRACE OFF');
+        login_stage = 3; // back to the PT mode
+        isTraceOn=0;
+        isIgnore=1;
+      }else{
+        // start the static timers
+        document.getElementById('btn_trace').innerHTML ='TRACE OFF';
+        login_stage = 3;
+        clearTimeout(echo_tid);
+        clearTimeout(datem_tid);
+        // sendAT('TRACE ON');
+        isTraceOn=1;
+        trace_button_check();
+//        isTraceOn=0;
+      } 
     }
 
     function send_command() {
      // alert("send_command :"+login_stage);
-     // log("send_command:: login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" button_press="+button_press);
-
-      if(document.getElementById("cmd").value == ""){
-        log(" 🡺 invalid param request");
-        return;  
-      }
-
-      if(login_stage >= 1) {
-        isIgnore=0;        
-        if(login_stage == 4){
-          log(" 🡺 Press Trace OFF to get params");
-          return;
-        }else{
-          sendAT(document.getElementById('cmd').value); 
-        }        
-        button_press = 8;
-      }
-      else {
-        log('No device connected!');
-      }
+        //if(login_stage >= 1) {
+            sendAT(document.getElementById('cmd').value); 
+            button_press = 8;
+        //}
+        //else {
+          //  log('No device connected!');
+        //}
     }
 
 
@@ -476,7 +438,7 @@ function sleep(ms) {
         far_blanking_var = hexToFloat('0x' + ('00' + s.getUint8(38).toString(16)).slice(-2) + ('00' + s.getUint8(39).toString(16)).slice(-2) + ('00' + s.getUint8(40).toString(16)).slice(-2) + ('00' + s.getUint8(41).toString(16)).slice(-2));  //hexToFloat('0x' + ('00' + s.getUint8(46).toString(16)).slice(-2) + ('00' + s.getUint8(47).toString(16)).slice(-2) + ('00' + s.getUint8(48).toString(16)).slice(-2) + ('00' + s.getUint8(49).toString(16)).slice(-2));  
         empty_distance = hexToFloat('0x' + ('00' + s.getUint8(42).toString(16)).slice(-2) + ('00' + s.getUint8(43).toString(16)).slice(-2) + ('00' + s.getUint8(44).toString(16)).slice(-2) + ('00' + s.getUint8(45).toString(16)).slice(-2));    //hexToFloat('0x' + ('00' + s.getUint8(50).toString(16)).slice(-2) + ('00' + s.getUint8(51).toString(16)).slice(-2) + ('00' + s.getUint8(52).toString(16)).slice(-2) + ('00' + s.getUint8(53).toString(16)).slice(-2));
         compensated_var_m = convert_to_mtrs(compensated_var);
-        if(Math.round(compensated_var_m) == 24.0)
+        if(compensated_var_m == 24.0)
         {
           mode_var = 20.0;
         }
@@ -513,26 +475,17 @@ function sleep(ms) {
         var textarea = document.getElementById('data-log');
         textarea.value = "";
 
-        var textarea2 = document.getElementById('main-params-log');
-        textarea2.value = "";
-
-        var textarea3 = document.getElementById('main-params-log-t');
-        textarea3.value = "";
-
         var lvlval = parseFloat(level_var);
         var dstval = parseFloat(distance_var);
 
-        if((lvlval != 0.0) && (dstval != 0.0)) {
-      //  if(parseFloat(level_var) > 0){
+        if(parseFloat(level_var) > 0){
           level_str = "Lvl: " + level_var.toFixed(3) + " " + p104_units + "\n";
-      //  }
-
-      //  if(parseFloat(distance_var) >= 0){
-          dist_str = "Dist: " + distance_var.toFixed(3) + " " + p104_units + "\n";
-      //  }
-          textarea2.value += level_str + dist_str;
-          textarea3.value += level_str + dist_str;
         }
+
+        if(parseFloat(distance_var) > 0){
+          dist_str = "Dist: " + distance_var.toFixed(3) + " " + p104_units + "\n";
+        }
+
         if (status_var != 999){
 
               bit0 = status_var & 1;
@@ -545,35 +498,33 @@ function sleep(ms) {
               bit7 = status_var & 128;
               
               if(status_var == 0)
-                status_str = "Status: OK";                        
+                status_str = "Status: OK\n\n";                        
               else {
                   if (bit4 == 16) {
                       if (bit5 == 32)
-                          status_str = "Status: LOE fail high";
+                          status_str = "Status: LOE fail high\n\n";
                       else if (bit6 == 64)
-                          status_str = "Status: LOE fail low";
+                          status_str = "Status: LOE fail low\n\n";
                       else
-                          status_str += "Status: LOE fail";
+                          status_str += "Status: LOE fail\n\n";
                   }
                   else if (bit3 == 8)
-                      status_str= "Status: LOE";
+                      status_str= "Status: LOE\n\n";
                   else if (bit2 == 4)
-                      status_str= "Status: Temp";
+                      status_str= "Status: Temp\n\n";
                   else if (bit1 == 2)
-                      status_str= "Status: Voltage";
+                      status_str= "Status: Voltage\n\n";
                   else if (bit7 == 128)
-                      status_str= "Status: Alarm";
+                      status_str= "Status: Alarm\n\n";
                   else
-                      status_str= "Status: " + status_var;// + "\n\n";
+                      status_str= "Status: " + status_var + "\n\n";
               }
-              // document.getElementById("sensor_status").innerHTML = "<span style='font-sze:12px; color: black; '>"+status_str+"</span>";
-              // document.getElementById("sensor_status_t").innerHTML = "<span style='font-sze:12px; color: black; '>"+status_str+"</span>";
-              textarea2.value += status_str;
-              textarea3.value += status_str;
+              document.getElementById("sensor_status").innerHTML = "<span style='font-sze:12px; color: black; '>"+status_str+"</span>";
+              document.getElementById("sensor_status_t").innerHTML = "<span style='font-sze:12px; color: black; '>"+status_str+"</span>";
             }       
         
-        // document.getElementById("lvl").innerHTML = "<span style='font-sze:12px; color: black; '>"+level_str+"</span>";
-        // document.getElementById("dist").innerHTML = "<span style='font-sze:12px;color: black;  '>"+dist_str+"</span>";
+        document.getElementById("lvl").innerHTML = "<span style='font-sze:12px; color: black; '>"+level_str+"</span>";
+        document.getElementById("dist").innerHTML = "<span style='font-sze:12px;color: black;  '>"+dist_str+"</span>";
 
         textarea.value += "Volume\t= " + volume_var.toFixed(3) + " " + p605_units + "\n";
         textarea.value += "Temp\t= " + temperature_var.toFixed(2) + " °C" + "\n";
@@ -581,8 +532,8 @@ function sleep(ms) {
         textarea.value += "Output\t= " + mA_output_var.toFixed(2) + " mA";
 
         // on the trace tab
-        // document.getElementById("lvl_t").innerHTML = "<span style='font-sze:12px; color: black; '>"+level_str+"</span>";
-        // document.getElementById("dist_t").innerHTML = "<span style='font-sze:12px;color: black;  '>"+dist_str+"</span>";      
+        document.getElementById("lvl_t").innerHTML = "<span style='font-sze:12px; color: black; '>"+level_str+"</span>";
+        document.getElementById("dist_t").innerHTML = "<span style='font-sze:12px;color: black;  '>"+dist_str+"</span>";      
         var textarea1 = document.getElementById('data-log_t');
         textarea1.value = "";
         textarea1.scrollTop = textarea.scrollHeight;
@@ -596,14 +547,6 @@ function sleep(ms) {
         document.getElementById('p104-box').value = string_val.slice(string_val.lastIndexOf(':') + 1);//string_val.substring(string_val.indexOf(':') + 1);
         p104_units_val = parseInt(document.getElementById('p104-box').value);
         p104_measurement_units();  // Update the measurement units to be displayed
-        if(isTraceOn == 1) {
-          //sendAT('/P605');
-          p605_tid = setInterval(p605_start, 1000);//5000);
-          clearTimeout(p104_tid);
-          clearTimeout(echo_tid);
-          clearTimeout(datem_tid);
-          button_press = 14;
-        }
       }
       else if(string_val.includes("/P105:"))
         document.getElementById('p105-box').value = string_val.slice(string_val.lastIndexOf(':') + 1);//string_val.substring(string_val.indexOf(':') + 1);
@@ -615,17 +558,6 @@ function sleep(ms) {
         document.getElementById('p605-box').value = string_val.slice(string_val.lastIndexOf(':') + 1);//string_val.substring(string_val.indexOf(':') + 1);
         p605_units_val = parseInt(document.getElementById('p605-box').value);
         p605_volume_units();  // Update the volume units to be displayed
-        if(isTraceOn == 1) {
-
-          // sendAT('GET ECHO');
-          // button_press = 10;
-          // datem_tid = setInterval(datem_start, 5000);
-
-          echo_tid = setInterval(echo_start, 1000);//5000);
-          clearTimeout(p605_tid);
-          clearTimeout(datem_tid);
-          clearTimeout(p104_tid);
-        }        
       }
       else if(string_val.includes("/P21:"))
         document.getElementById('p21-box').value = string_val.slice(string_val.lastIndexOf(':') + 1);//string_val.substring(string_val.indexOf(':') + 1);
@@ -634,64 +566,67 @@ function sleep(ms) {
 
 // Incoming GATT notification was received
 async function incomingData(event){
+      var dsp=1;
       // Read data from BLE CodeLess peer
       let readInValue = await outboundChar.readValue();
       let decoder = new TextDecoder('utf-8');
       // var checkBox = document.getElementById("myCheck");
       const doc_value = document.getElementById('cmd').value;
-      const string_check =  decoder.decode(readInValue).replace('\r','\r 🡸 ').replace('\n','').replace('\0','');
+      const string_check =  decoder.decode(readInValue).replace('\r','\r <+@- ').replace('\n','').replace('\0','');
       //alert("button_press="+button_press+" readInValue="+readInValue+"login_stage="+login_stage+" string_check="+string_check);
       //alert(login_stage + " " +isIgnore);
-      // alert(string_check + "1");
-      //log("login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" button_press="+button_press);
+     // alert(string_check + "1");
+     await sleep(1 * 1000);
+     //log("login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting);
 
-      if( isIgnore_2 === 2 ){ //NEED TO CHECK
+      if( isIgnore_2 === 2 ){
           isIgnore_2 = 0;          
-          //await sleep(2 * 1000);
-          //return;
+         // await sleep(2 * 1000);
+           return;
       }
       
-
+      //if( (login_stage==3 || login_stage==3)  &&  (isIgnore==1) )
       if(isIgnore==1) 
       {
+         log(string_check + "2");
           isIgnore=0;
-          return; //--> need to check
+          // sleep for 2 seconds
+         // await sleep(2 * 1000);
+           return;
       }
-      //alert(string_check + "2");
+      log(string_check + "2");
       if ((button_press == 10) || (button_press == 11) || ((button_press == 8) && ((doc_value == "GET ECHO") || (doc_value == "GET DATEM"))))
       {
         var hex = Uint8tohex(readInValue);
         if((button_press == 10) || ((button_press == 8) && (doc_value == "GET ECHO")))
-          log(" 🡸 ECHO Received");
+          log(" <- ECHO Received");
         else if ((button_press == 11) || ((button_press == 8) && (doc_value == "GET DATEM")))
-          log(" 🡸 DATEM Received");        
+          log(" <- DATEM Received");        
       }
       else
       { 
-        //alert(string_check + "3");
+        log(string_check + "3");
         if(string_check.includes("Entered PASSTHROUGH mode"))
         {
             login_stage = 3; // Entered PT mode
-            log(" 🡸 Log in Success");            
+            log(" <- Log in Success");            
         }
         else if(string_check.includes("Exit PASSTHROUGH mode")){          
-          //alert("Exit : isIgnore="+isIgnore+" login_stage="+login_stage+" isDisconnecting="+isDisconnecting+" string_check="+string_check);
-          login_stage = 2;  // moving to AT mode
-        }
-        else if(string_check.includes("PASSTHROUGH failed")){          
-          login_stage = 2;
-          log(" 🡸 Normal mode failed");            
+          log("Exit : isIgnore="+isIgnore+" login_stage="+login_stage+" isDisconnecting="+isDisconnecting+" string_check="+string_check);
+          login_stage = 0;
         }
         else if(string_check.includes("Logged In Success") || (string_check.includes("OK")  && login_stage == 1)){
           login_stage = 2;  // Logged in success mode
           closeForm();
           if(isDisconnecting == 0){
-            log(" 🡸 Connected");
+            log(" <- Connected");
             sendATL('AT+PT=1');
-            setTimeout(trace_button_check, 2000);//3000); // UNDER TEST 1
+            setTimeout(trace_button_check, 1000);
           }else {
-           // alert(isDisconnecting+" ::"+string_check);
-            log(" 🡸 disconnecting");
+            await sleep(2 * 1000);
+            log(isDisconnecting+" ::"+string_check);
+            log(" <- disconnecting");
+
           }
         }
         else if( ( string_check.includes("ERROR") || string_check.includes("Logged In failed")) && login_stage == 1 )
@@ -702,32 +637,35 @@ async function incomingData(event){
             openForm();
         }
         else{
-          var disp=0;
           if((button_press >=20) && (button_press <=26) || (string_check.includes("/P")))
             populate_params(string_check);
-          //alert(string_check+"st");
-          if( (isTerminated === 1) || (isDisconnecting === 1) || (isDisconnecting === 2) ){
-            disp = 1;
-            await sleep(2 * 1000);
-          }
-          
 
-          if( disp == 0){
-            log(" 🡸 " + string_check );
+	log("incomingData:: login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" isTerminated="+isTerminated);
+            
+            //if( login_stage=0 isIgnore=0 isIgnore_2=0 isDisconnecting=0 isTerminated=0            
+
+            if(isIgnore_2 == 2 || isTerminated == 1)
+            {
+              dsp=0;
+              log(" <~@-no display please ");
+            }
+
+          //alert(string_check+"st");
+          if(dsp == 1){
+            log(" <@- " + string_check );
           }
-          
           //alert(string_check + "2");
             // Log the incoming string (format slightly)
           //var res=decoder.decode(readInValue).replace('\r','\r <- ').replace('\n','').replace('\0','');          
           //log(" <- " + sizeof(res) + " "+res);
-          //await sleep(2 * 1000);
+          await sleep(1 * 1000);
         }        
       }
     }
   
     async function onDisconnected()
     {
-      log(" 🡺 Bluetooth connection terminated!");
+      log("-> Bluetooth connection terminated!");
       button_press=0;
       login_stage = 0;
       isDisconnecting=0; // completed
@@ -736,37 +674,25 @@ async function incomingData(event){
     
     async function bleTDisconnect()
     {
-      //log("login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" button_press="+button_press);
       if (device.gatt.connected) {
           device.gatt.disconnect();
-          log(" 🡺 Disconnected");
+          log(" -> Disconnected");
       }
       else {
-          log(' 🡺 Bluetooth Device is already disconnected');
+          log('-> Bluetooth Device is already disconnected');
           
       }
       button_press=0;
       login_stage = 0;
       isDisconnecting=0; // completed
       // isTerminated=0;
-      //await sleep(3 * 1000);  // NOT NECESSARY
     }
 
     async function bleT1Disconnect()
     {
-      if(login_stage >= 2) {
-        sendATL('AT+PT=0'); //--> BB: commented
-        await sleep(3 * 1000);
-        isDisconnecting=1;
-        // log("login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" button_press="+button_press);
-        bleTDisconnect();//setTimeout(bleTDisconnect,1000);
-      }
-      else if (login_stage == 1) {
-        bleTDisconnect();//setTimeout(bleTDisconnect,1000);
-      } 
-      else {
-        log('No device connected!');
-      }
+      sendATL('AT+PT=0'); //--> BB: commented
+      isDisconnecting=1;
+      setTimeout(bleTDisconnect,1000);
     }
 
     async function bleDisconnect()
@@ -774,19 +700,14 @@ async function incomingData(event){
       
 	    isIgnore_2=1;
       isDisconnecting=2;
-      //log("login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" button_press="+button_press);
 
       // if(login_stage == 4){
       //   sendAT('TRACE OFF');
       // }      
-      // clearTimeout(echo_tid);
-      // clearTimeout(datem_tid);
-      tids_trace_reset();
-      document.getElementById('btn_trace').innerHTML ='TRACE OFF';
-      document.getElementById('btn_mode').innerHTML ='AT MODE';
-
-      log(" 🡺 Disconnecting");
-      bleT1Disconnect();//setTimeout(bleT1Disconnect,1000);
+      clearTimeout(echo_tid);
+      clearTimeout(datem_tid);
+      log(" -> Disconnecting");
+      setTimeout(bleT1Disconnect,1000);
     }
 
     // go to the reflect manual page
@@ -822,28 +743,23 @@ async function incomingData(event){
   // Send an AT command to the CodeLess BLE peer
   async function sendATL(cmd) {
       //log("ww"+cmd);
-      //log("sendATL:: login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isTerminated="+isTerminated+" isDisconnecting="+isDisconnecting);
-
-      if(isIgnore_2 == 1 || isDisconnecting == 2){
-        return;
-      }
+      //log("sendATL:: login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting);
 
       if(cmd === 'AT+PT=1'){
-          log(' 🡺 Logging ...'   );
-          await sleep(2 * 1000); // needed 
+          log(' -> Logging ...'   );
           isIgnore=1;
       }
       else if(cmd.includes("AT+AUTH="))      
       {
       }
       else if(cmd === 'AT+PT=0'){
-        //log(' 🡺 Connecting ...'   );
+        //log(' -> Connecting ...'   );
       }
       else if(isDisconnecting == 2 ){
-        log(' 🡺 Disconnecting ...'   );
+        log(' -> Disconnecting ...'   );
         isDisconnecting=0;
       }else{
-        log(' 🡺 Connecting ...'   );
+        log(' -> Connecting ...'   );
       }
 
       // Append an extra character as expected by CodeLess
@@ -895,7 +811,7 @@ async function incomingData(event){
 // Send an AT command to the CodeLess BLE peer
 async function sendAT(cmd) {
       // Display the command in the log
-      log(' 🡺 ' + cmd );
+      log(' -> ' + cmd );
       // Append an extra character as expected by CodeLess
       var commandToSend = cmd + "\0";
       try{
@@ -909,100 +825,83 @@ async function sendAT(cmd) {
     }
     // If enter key was pressed by user while editing, send command immediately
     function wasEnter(elem) {
-      if(login_stage >= 1) {
-        isIgnore=0;
-        if(event.key == 'Enter') {
-
-
-          if(document.getElementById("cmd").value == ""){
-            log(" 🡺 invalid param request");
-            return;  
-          }
-
-
-
-
-          if(login_stage == 4){
-    	      log(" 🡺 Press Trace OFF to get params");
-    	      return;
-	     }else{
-          button_press = 8;
-          sendAT(document.getElementById("cmd").value);
-         }
-       }
-      }
-      else {
-        log('No device connected!');
+      if(event.key == 'Enter') {
+        button_press = 8;
+        sendAT(document.getElementById("cmd").value);
       }
     }
 
     // Check and decide the parameter recall for selected number of parameters
     function param_check() {
-      if(login_stage >= 3) {
       tids_trace_reset();
-      isIgnore=0;
-        switch(button_press) {
-          case 20:
-            if(document.getElementById("p100-box").value == "")
-              sendAT('/P100');
-            else
-              sendAT('/P100:'+ document.getElementById("p100-box").value);
-            document.getElementById("p100-box").value == "";
-            break;
-          case 21:
-            if(document.getElementById("p104-box").value == "")
-              sendAT('/P104');
-            else
-              sendAT('/P104:'+ document.getElementById("p104-box").value);
-            document.getElementById("p104-box").value == "";         
-            break;
-          case 22:
-            if(document.getElementById("p105-box").value == "")
-              sendAT('/P105');
-            else
-              sendAT('/P105:'+ document.getElementById("p105-box").value);
-            document.getElementById("p105-box").value == "";    
-            break;
-          case 23:
-            if(document.getElementById("p106-box").value == "")
-              sendAT('/P106');
-            else
-              sendAT('/P106:'+ document.getElementById("p106-box").value);            
-            document.getElementById("p106-box").value == "";
-            break;
-          case 24:
-            if(document.getElementById("p808-box").value == "")
-              sendAT('/P808');
-            else
-              sendAT('/P808:'+ document.getElementById("p808-box").value);
-            document.getElementById("p808-box").value == "";        
-            break;
-          case 25:
-            if(document.getElementById("p605-box").value == "")
-              sendAT('/P605');
-            else
-              sendAT('/P605:'+ document.getElementById("p605-box").value);
-            document.getElementById("p605-box").value == "";           
-            break;                        
-          case 26:
-            if(document.getElementById("p21-box").value == "")
-              sendAT('/P21');
-            else
-              sendAT('/P21:'+ document.getElementById("p21-box").value);
-            document.getElementById("p21-box").value == "";        
-            break; 
-          default:
-            break;
-        }
-      } else {
-        log('Device not in Normal mode!');
+      switch(button_press) {
+        case 20:
+          if(document.getElementById("p100-box").value == "")
+            sendAT('/P100');
+          else
+            sendAT('/P100:'+ document.getElementById("p100-box").value);
+          document.getElementById("p100-box").value == "";
+          break;
+        case 21:
+          if(document.getElementById("p104-box").value == "")
+            sendAT('/P104');
+          else
+            sendAT('/P104:'+ document.getElementById("p104-box").value);
+          document.getElementById("p104-box").value == "";         
+          break;
+        case 22:
+          if(document.getElementById("p105-box").value == "")
+            sendAT('/P105');
+          else
+            sendAT('/P105:'+ document.getElementById("p105-box").value);
+          document.getElementById("p105-box").value == "";    
+          break;
+        case 23:
+          if(document.getElementById("p106-box").value == "")
+            sendAT('/P106');
+          else
+            sendAT('/P106:'+ document.getElementById("p106-box").value);            
+          document.getElementById("p106-box").value == "";
+          break;
+        case 24:
+          if(document.getElementById("p808-box").value == "")
+            sendAT('/P808');
+          else
+            sendAT('/P808:'+ document.getElementById("p808-box").value);
+          document.getElementById("p808-box").value == "";        
+          break;
+        case 25:
+          if(document.getElementById("p605-box").value == "")
+            sendAT('/P605');
+          else
+            sendAT('/P605:'+ document.getElementById("p605-box").value);
+          document.getElementById("p605-box").value == "";           
+          break;                        
+        case 26:
+          if(document.getElementById("p21-box").value == "")
+            sendAT('/P21');
+          else
+            sendAT('/P21:'+ document.getElementById("p21-box").value);
+          document.getElementById("p21-box").value == "";        
+          break; 
+        default:
+          break;
       }
     }
   
     // If enter key was pressed by user while editing the parameters, send command immediately
-    function wasEnter2(elem) {
+        function wasEnter2(elem) {
       if(event.key == 'Enter') {
-        param_check();
+        switch(button_press)
+        {
+          case 20:
+            break;
+            case 21:
+              break;
+
+        }
+        button_press = 8;
+        sendAT(document.getElementById("cmd").value);
       }
     }
 
@@ -1023,15 +922,7 @@ async function sendAT(cmd) {
     // Display text in log field text area 
     function log(text)
     {
-     // log_2("log:: login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" isTerminated="+isTerminated);
-        // log_2("");
-        if(isIgnore_2==1 || isDisconnecting ==1 || isDisconnecting ==2 || isTerminated==1){
-          if(isIgnore_2==1) isIgnore_2=0;
-          // if(isTerminated==1) isTerminated=0;
-          //log_2("log::size "+sizeof(text));
-         // if(sizeof(text) > 100)  return;
-        }
-
+      //log_2("log:2: login_stage="+login_stage+" isIgnore="+isIgnore+" isIgnore_2="+isIgnore_2+" isDisconnecting="+isDisconnecting+" isTerminated="+isTerminated);
       var textarea = document.getElementById('log');
       if(textarea.value == "")
         textarea.value = text;
@@ -1074,7 +965,7 @@ function myLoadFunction() {
         color: white;
 	    /* padding: 15px 32px; */
         height:100px;
-        width: 268px;
+        width: 280px;
         /* width:160px; */
         text-align: center;
         text-decoration: none;
@@ -1159,7 +1050,7 @@ function myLoadFunction() {
     color: rgb(0, 0, 0);
     /* font-family: "verdana"; */
     font-size: 4.5em;
-    overflow: scroll;
+    overflow: hidden;
   /*Hide content before animation*/
     /* border-right: .1em solid white; */
   /*Cursor*/
@@ -1369,11 +1260,12 @@ function myLoadFunction() {
                 </a>
               </div>
           </td>
-          <td>      
-            <div class="my_text" id="id_title"  style="color: white; text-align: center;">
+
+          <td>
+            <div class="my_text" id="id_title"  style="color: white;">
               REFLECT
             </div>
-          </td> 
+          </td>  
           <td></td><td></td>
           <td></td><td></td>    
           <td></td><td></td>       
@@ -1381,7 +1273,7 @@ function myLoadFunction() {
              <div class="logo1">
               <a href="" style="text-decoration:none;">
                 <!-- <img src="./img/dbr16.png"  alt="Logo" style=" width: 90px;;height: 90px;;border:none;text-decoration:none;color:#eeeeee00;">  -->
-                <img src="./img/Icon256Reflect_new.png"  alt="Logo" onclick="bleExit1Page();" style=" width: 160px;;height: 160px;;border:none;text-decoration:none;color:#eeeeee00;"> 
+                <img src="./img/Icon256Reflect.png"  alt="Logo" onclick="bleExit1Page();" style=" width: 160px;;height: 160px;;border:none;text-decoration:none;color:#eeeeee00;"> 
               </a>
             </div>
           </td>        
@@ -1419,45 +1311,41 @@ function myLoadFunction() {
                     </div>                    
                     <table><tr><td></td><td><div></div></td></tr></table>
    
-                    <table style="width:91%">
+                    <table style="width:70%">
 
                       <tr>
                         <td><button type="button" class="button button-style1" onclick="ble_connect(); button_press = 1">Device Scan</button></td>
                         <td><button type="button" class="button button-style1" onclick="bleDisconnect();  button_press = 2">End Session</button></td>
                       </tr>
-                    </table>
-
-                    <table style="width:50%">
+  
                       <tr>
                         <td>
-                          <textarea id="log" class="textarea_c" rows="8" cols="10" style="font-size: 16pt; font-weight: bold; width:420px; height:430px;" readonly></textarea>
+                          <textarea id="log" class="textarea_c" rows="8" cols="10" style="font-size: 16pt; font-weight: bold; width:450px; height:430px;" readonly></textarea>
                         </td>
                         <td>
-                        <table style="width:40%">
-                          <tr>
+              <table style="width:50%">
+              <tr>
                             <td>
-								<!-- needs to be changed back to label, as we get better control -->
-                              <!-- <div class = "blocks" id='lvl'></div> 
-                              <div class = "blocks" id='dist'></div>
-                              <div class = "blocks" id='sensor_status'></div> -->
-                              <textarea id="main-params-log" class="textarea3" rows="6" cols="8" style="font: inherit; font-size: 40pt; font-weight: bold; width:395px; height:300px; background: rgb(228, 236, 237); resize:none; border: none;" readonly></textarea>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <textarea id="data-log" class="textarea2" rows="8" cols="8" style="font-size: 22pt; font-weight: bold; width:395px; height:110px;" readonly></textarea>
-                            </td>
-                          </tr>
+                          <div  class = "blocks" id='lvl'></div>
+                          <div  class = "blocks" id='dist'></div>
+                          <div class = "blocks" id='sensor_status'></div>
+                              </td>
+                              </tr>
+                              <tr>
+                              <td>
+                                <textarea id="data-log" class="textarea2" rows="8" cols="8" style="font-size: 22pt; font-weight: bold; width:380px; height:180px;" readonly></textarea>
+                              </td>
+                              </tr>
                           </table>
                         </td>
-                      </tr>
-                    </table>
+  
+  </table>
 
                   
                   <table><tr><td></td><td><div></div></td></tr></table>
                   <table style="width:66%">
                   <tr>
-                    <td><input type="text" id="cmd" style="font-size: 40pt; font-weight: bold; width:560px; height:80px;" onkeydown="wasEnter(this)"></td>
+                    <td><input type="text" id="cmd" style="font-size: 40pt; font-weight: bold; width:580px; height:80px;" onkeydown="wasEnter(this)"></td>
  
                     <td>
                         <button type="button" class="button" onclick="send_command();">
@@ -1473,10 +1361,10 @@ function myLoadFunction() {
                     <tr>
                       <table style="width:30%;">
                         <td style="position: center;">
-                          <button type="button" class="button button-style1" id="btn_trace" onclick="button_press=10; trace_off();">TRACE OFF</button>
+                          <button type="button" class="button button-style1" id="btn_trace" onclick="trace_off(); button_press=3;">TRACE OFF</button>
                         </td>
                         <td style="position: center;">
-                          <button type="center" class="button button-style1" id="btn_mode" onclick="button_press = 13; Normal_mode();">AT MODE</button>
+                          <button type="center" class="button button-style1" id="btn_mode" onclick="Normal_mode(); button_press = 13">AT MODE</button>
                         </td>
                       <td>
                         <button type="button" class="button" onclick="clearlog(); button_press = 9">
@@ -1506,7 +1394,7 @@ function myLoadFunction() {
            <table style="width:66%"> <!-- check here: start of the trace box -->
             <tr>
               <td>
-                <div class="chartBox" style="position: left; margin: auto; height:100%; width:53rem">
+                <div class="chartBox" style="position: left; margin: auto; height:100%; width:100%">
                     <canvas id="myChart"></canvas>
                 </div>  
               </td>                 
@@ -1657,9 +1545,9 @@ function myLoadFunction() {
                                 // Hide the label of every 14th dataset
                                 rounding = Math.round(this.getLabelForValue(val)*100)/100;                // Rounded precision
                                 if(index == 0)
-                                  return (index) % valtest === 0 ? rounding.toFixed(1) : undefined;
+                                  return (index) % valtest === 0 ? rounding.toFixed(2) : undefined;
                                 else
-                                  return (index + 1) % valtest === 0 ? rounding.toFixed(1) : undefined; // Shows rounded value in Xaxis aling with gridline,
+                                  return (index + 1) % valtest === 0 ? rounding.toFixed(2) : undefined; // Shows rounded value in Xaxis aling with gridline,
                                 },                                                                      // undefined don't shows gridlines
                                 maxRotation: 0,   // Rotate the tick labels to show horizontally                     
                             }                     
@@ -1713,14 +1601,12 @@ function myLoadFunction() {
         <table style="width:60%">
           <tr>              
               <td>
-				<!-- need to revert back to the label as it gives better control -->
-                <!-- <div class = "blocks" id='lvl_t'> </div>
+                <div class = "blocks" id='lvl_t'> </div>
                 <div class = "blocks" id='dist_t'> </div>
-                <div class = "blocks" id='sensor_status_t'> </div>           -->
-                <textarea id="main-params-log-t" class="textarea3" rows="6" cols="8" style="font: inherit; font-size: 40pt; font-weight: bold; width:430px; height:300px; background: rgb(228, 236, 237); resize:none; border: none;" readonly></textarea>
+                <div class = "blocks" id='sensor_status_t'> </div>          
               </td>
               <td>
-                <textarea id="data-log_t" class="textarea2" rows="4" cols="1" style="font-size: 22pt; font-weight: bold; width:395px; height:110px;" readonly>data-log_t</textarea>                
+                <textarea id="data-log_t" class="textarea2" rows="4" cols="1" style="font-size: 22pt; font-weight: bold" readonly>data-log_t</textarea>                
               </td>
           </tr>
         </table>
