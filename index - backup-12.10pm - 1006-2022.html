@@ -232,7 +232,7 @@ function sleep(ms) {
     }
 
     function param_update() {
-      if((login_stage >= 3) && (isDisconnecting == 0)) {
+      if(login_stage >= 3) {
         tids_trace_reset();
         // settings_clear();
         param_query = 0;
@@ -241,7 +241,7 @@ function sleep(ms) {
     }
 
     function param_start() {
-      if((login_stage >= 3) && (isDisconnecting == 0)) {
+      if(login_stage >= 3) {
         switch (param_query) {
           case 0:
             button_press = 20;
@@ -381,7 +381,7 @@ function sleep(ms) {
         }
     }
     function Normal_mode() {        
-        if((login_stage >= 3) && (isDisconnecting == 0)) { // currently in PT mode
+        if(login_stage >= 3) { // currently in PT mode
           sendAT('AT+PT=0');
           // clearTimeout(echo_tid);
           // clearTimeout(datem_tid);
@@ -400,7 +400,6 @@ function sleep(ms) {
           clearTimeout(echo_tid);
           clearTimeout(datem_tid);
           clearTimeout(param_tid);
-          document.getElementById('btn_trace').innerHTML ='TRACE ON';
           sendATL('AT+PT=1');
           //setTimeout(trace_button_check, 1000);
           //log(' <- AT+PT=1');
@@ -424,7 +423,7 @@ function sleep(ms) {
 
     function trace_off() {  
       //alert("trace_off: isTraceOn="+isTraceOn);
-      if((login_stage >= 3) && (isDisconnecting == 0)) {
+      if(login_stage >= 3) {
         if(isTraceOn==1){
           // sendAT('TRACE OFF');
           // document.getElementById('btn_trace').innerHTML ='TRACE ON';
@@ -587,16 +586,10 @@ function sleep(ms) {
         var textarea = document.getElementById('data-log');
         textarea.value = "";
 
-        // var textarea2 = document.getElementById('main-params-log');
-        // textarea2.value = "";
-
-        var textarea2 = document.getElementById('level-log');
+        var textarea2 = document.getElementById('main-params-log');
         textarea2.value = "";
 
-        // var textarea3 = document.getElementById('main-params-log-t');
-        // textarea3.value = "";
-
-        var textarea3 = document.getElementById('level-log-t');
+        var textarea3 = document.getElementById('main-params-log-t');
         textarea3.value = "";
 
         var lvlval = parseFloat(level_var);
@@ -610,14 +603,8 @@ function sleep(ms) {
       //  if(parseFloat(distance_var) >= 0){
           dist_str = "Dist: " + distance_var.toFixed(3) + " " + p104_units + "\n";
       //  }
-          // textarea2.value += level_str + dist_str;
-          textarea2.value = level_var.toFixed(3) + " " + p104_units;
-          textarea2 = document.getElementById('distance-log');    
-          textarea2.value = distance_var.toFixed(3) + " " + p104_units;
-          // textarea3.value += level_str + dist_str;
-          textarea3.value = level_var.toFixed(3) + " " + p104_units;
-          textarea3 = document.getElementById('distance-log-t');    
-          textarea3.value = distance_var.toFixed(3) + " " + p104_units;
+          textarea2.value += level_str + dist_str;
+          textarea3.value += level_str + dist_str;
         }
         if (status_var != 999){
 
@@ -631,35 +618,31 @@ function sleep(ms) {
               bit7 = status_var & 128;
               
               if(status_var == 0)
-                status_str = "OK";                        
+                status_str = "Status: OK";                        
               else {
                   if (bit4 == 16) {
                       if (bit5 == 32)
-                          status_str = "LOE fail high";
+                          status_str = "Status: LOE fail high";
                       else if (bit6 == 64)
-                          status_str = "LOE fail low";
+                          status_str = "Status: LOE fail low";
                       else
-                          status_str = "LOE fail";
+                          status_str += "Status: LOE fail";
                   }
                   else if (bit3 == 8)
-                      status_str= "LOE";
+                      status_str= "Status: LOE";
                   else if (bit2 == 4)
-                      status_str= "Temp";
+                      status_str= "Status: Temp";
                   else if (bit1 == 2)
-                      status_str= "Voltage";
+                      status_str= "Status: Voltage";
                   else if (bit7 == 128)
-                      status_str= "Alarm";
+                      status_str= "Status: Alarm";
                   else
-                      status_str= status_var;// + "\n\n";
+                      status_str= "Status: " + status_var;// + "\n\n";
               }
               // document.getElementById("sensor_status").innerHTML = "<span style='font-sze:12px; color: black; '>"+status_str+"</span>";
               // document.getElementById("sensor_status_t").innerHTML = "<span style='font-sze:12px; color: black; '>"+status_str+"</span>";
-              // textarea2.value += status_str;
-              textarea2 = document.getElementById('status-log');
-              textarea2.value = status_str;
-              // textarea3.value += "Status: " + status_str;
-              textarea3 = document.getElementById('status-log-t');
-              textarea3.value = status_str;
+              textarea2.value += status_str;
+              textarea3.value += status_str;
             }       
         
         // document.getElementById("lvl").innerHTML = "<span style='font-sze:12px; color: black; '>"+level_str+"</span>";
@@ -828,10 +811,7 @@ async function incomingData(event){
             if(sysState == 2 && string_check.length > 12){
               //log(" ← param state" + sysState );
             }else {
-              if(string_check.includes("/P"))
-                log(" ← " + string_check.slice(string_check.lastIndexOf('/')) );//   alert(string_check.slice(string_check.lastIndexOf('/')));
-              else
-                log(" ← " + string_check );
+              log(" ← " + string_check );
             }
           }
           
@@ -846,8 +826,6 @@ async function incomingData(event){
   
     async function onDisconnected()
     {
-      tids_trace_reset();
-      document.getElementById('btn_trace').innerHTML ='TRACE OFF';
       log(" → Bluetooth connection terminated!");
       button_press=0;
       login_stage = 0;
@@ -904,7 +882,7 @@ async function incomingData(event){
       // clearTimeout(datem_tid);
       tids_trace_reset();
       document.getElementById('btn_trace').innerHTML ='TRACE OFF';
-      // document.getElementById('btn_mode').innerHTML ='ADVANCED MODE';
+      document.getElementById('btn_mode').innerHTML ='ADVANCED MODE';
 
       log(" → Disconnecting");
       bleT1Disconnect();//setTimeout(bleT1Disconnect,1000);
@@ -1056,7 +1034,7 @@ async function sendAT(cmd) {
 
     // Check and decide the parameter recall for selected number of parameters
     function param_check() {
-      if((login_stage >= 3) && (isDisconnecting == 0)) {
+      if(login_stage >= 3) {
       tids_trace_reset();
       isIgnore=0;
         switch(button_press) {
@@ -1531,7 +1509,6 @@ function myLoadFunction() {
       <article class="accordion-item accordion-active" data-actab-group="0" data-actab-id="0">
         <h4 class="accordion-item__label"></h4><!-- IMPORTANT : donot remove this tag-->
         <div class="accordion-item__container">
-          <div id="home_tab" style='top:-40%;  left: -20%; width:68%; height:100%; border-style:solid; border-width: 5px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);' align="center">
           <table>
             <tr>               
                 <td></td><td></td>
@@ -1554,78 +1531,40 @@ function myLoadFunction() {
                     </div>                    
                     <table><tr><td></td><td><div></div></td></tr></table>
    
-                    <table style="width:100%">
+                    <table style="width:91%">
 
                       <tr>
                         <td><button type="button" class="button button-style1" onclick="ble_connect(); button_press = 1">Device Scan</button></td>
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <!-- <td></td> -->
                         <td><button type="button" class="button button-style1" onclick="bleDisconnect();  button_press = 2">End Session</button></td>
                       </tr>
                     </table>
 
-                    <table style="width:100%">
+                    <table style="width:91%">
+                      <tr>
+                        <td><label id = "data-log-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Data Log</label></td>
+                        <td><label id = "parameters-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Live Parameters</label></td>
+                      </tr>
+                    </table>
+
+                    <table style="width:50%">
                       <tr>
                         <td>
-                        <table style="width:10%">
-                          <tr>
-                            <td><label id = "data-log-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Data Log</label></td>
-                          </tr>
+                          <textarea id="log" class="textarea_c" rows="8" cols="10" style="font-size: 16pt; font-weight: bold; width:420px; height:430px;" readonly></textarea>
+                        </td>
+                        <td>
+                        <table style="width:40%">
                           <tr>
                             <td>
-                              <textarea id="log" class="textarea_c" rows="8" cols="10" style="font-size: 16pt; font-weight: bold; width:400px; height:560px;" readonly></textarea>
-                            </td>
-                          </tr>
-                        </table>
-                      </td> 
-                      <td>
-                        <table style="width:10%">
-                          <!-- <tr>
-                            <td> -->
 								<!-- needs to be changed back to label, as we get better control -->
                               <!-- <div class = "blocks" id='lvl'></div> 
                               <div class = "blocks" id='dist'></div>
                               <div class = "blocks" id='sensor_status'></div> -->
-                              <!-- <textarea id="main-params-log" class="textarea3" rows="6" cols="8" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40pt; font-weight: 500; width:380px; height:300px; background: rgb(228, 236, 237); resize:none; border: none;" readonly></textarea>
-                            </td>
-                          </tr> -->
-                          <tr>                            
-                            <td><label id = "parameters-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Live Parameters</label></td>
-                          </tr>
-                          <tr>
-                            <td><label id = "level-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; ">Level:</label></td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <textarea id="level-log" class="textarea2" rows="1" cols="8" style="font-size: 40pt; font-weight: bold; width:380px; height:70px;" readonly></textarea>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td><label id = "distance-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; ">Distance:</label></td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <textarea id="distance-log" class="textarea2" rows="1" cols="8" style="font-size: 40pt; font-weight: bold; width:380px; height:70px;" readonly></textarea>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td><label id = "status-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; ">Status:</label></td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <textarea id="status-log" class="textarea2" rows="1" cols="8" style="font-size: 40pt; font-weight: bold; width:380px; height:70px;" readonly></textarea>
+                              <textarea id="main-params-log" class="textarea3" rows="6" cols="8" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40pt; font-weight: 500; width:395px; height:300px; background: rgb(228, 236, 237); resize:none; border: none;" readonly></textarea>
                             </td>
                           </tr>
                           <tr>
                             <td>
-                              <textarea id="data-log" class="textarea2" rows="8" cols="8" style="font-size: 22pt; font-weight: bold; width:380px; height:110px;" readonly></textarea>
+                              <textarea id="data-log" class="textarea2" rows="8" cols="8" style="font-size: 22pt; font-weight: bold; width:395px; height:110px;" readonly></textarea>
                             </td>
                           </tr>
                           </table>
@@ -1633,16 +1572,16 @@ function myLoadFunction() {
                       </tr>
                     </table>
 
-                    <table style="width:100%">
+                    <table style="width:91%">
                       <tr>
                         <td><label id = "command-box-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Command Box</label></td>
                       </tr>
                     </table>
                   
 
-                  <table style="width:100%">
+                  <table style="width:66%">
                   <tr>
-                    <td><input type="text" placeholder="Enter the command" id="cmd" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 30pt; font-weight: bold; width:546px; height:80px; " onkeydown="wasEnter(this)"></td>
+                    <td><input type="text" placeholder="Enter the command to send" id="cmd" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 30pt; font-weight: bold; width:560px; height:80px; " onkeydown="wasEnter(this)"></td>
  
                     <td>
                         <button type="button" class="button" onclick="send_command();">
@@ -1654,10 +1593,10 @@ function myLoadFunction() {
                     </td>
                   </tr>                      
                   </table>
-                  <table style="width:80%;">
+                  <table style="width:52%;">
                     <tr>
-                      <table style="width:100%;">
-                        <!-- <td style="position: center;">
+                      <table style="width:30%;">
+                        <td style="position: center;">
                           <button type="button" class="button button-style1" id="btn_trace1" onclick="button_press=10; trace_off();">TRACE OFF</button>
                           <script>
                             document.getElementById("btn_trace1").style.visibility="hidden";
@@ -1668,25 +1607,7 @@ function myLoadFunction() {
                           <script>
                             document.getElementById("btn_mode").style.visibility="hidden";
                           </script>
-                        </td> -->
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>     
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>  
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>  
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>  
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td><td></td>  
-                        <td></td><td></td>
-                        <td></td><td></td>
-                        <td></td>
+                        </td>
                         <td>
                           <button type="button" class="button" onclick="clearlog(); button_press = 9">
                             CLEAR
@@ -1696,14 +1617,11 @@ function myLoadFunction() {
                       
                     </tr>                    
                   </table>
-              </div>
           </div>
       </article>
       <article class="accordion-item" data-actab-group="0" data-actab-id="1">
         <h4 class="accordion-item__label"> </h4> <!-- IMPORTANT : donot remove this tag-->
-        <div id="trace_tab" style='top:-40%;  left: -20%; width:68%; height:100%; border-style: solid; border-width: 5px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);' align="center">
         <div class="accordion-item__container">
-          
           <table>
             <tr>               
                 <td></td><td></td>
@@ -1715,10 +1633,10 @@ function myLoadFunction() {
 
           <!-- <p>reprehenderit temporibus, assumenda cupiditate consequatur soluta odit ex repudiandae delectus cumque, provident hic sed quod? Quis, nam. Similique eaque quae vel recusandae expedita qui sint fugiat, nisi assumenda et ex molestiae atque deleniti magni, ipsam libero!</p> -->
            <!-- start of trace box --> 
-          <table style="width:100%"> <!-- check here: start of the trace box -->
+           <table style="width:66%"> <!-- check here: start of the trace box -->
             <tr>
               <td>
-                <div class="chartBox" style="position: left; margin: auto; height:100%; width:52rem">
+                <div class="chartBox" style="position: left; margin: auto; height:100%; width:53rem">
                     <canvas id="myChart"></canvas>
                 </div>  
               </td>                 
@@ -1918,88 +1836,33 @@ function myLoadFunction() {
                     </button>
                 </td>               
             </tr> -->          
-          </table>
+    </table>
            <!-- end of the trace box-->
         </div>
 
-        <table style="width:100%">
-          <tr>            
-            <label id = "parameters-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:100%; height:20px; display: inline-block;">Live Parameters</label>
-          </tr>
-        </table>
-
-        <table style="width:100%">
-        <tr>
-          <td>
-        <table style="position: left; margin: auto; height:100%; width:2rem">
-          <!-- <tr>
-            <td> -->
-<!-- needs to be changed back to label, as we get better control -->
-              <!-- <div class = "blocks" id='lvl'></div> 
-              <div class = "blocks" id='dist'></div>
-              <div class = "blocks" id='sensor_status'></div> -->
-              <!-- <textarea id="main-params-log" class="textarea3" rows="6" cols="8" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40pt; font-weight: 500; width:380px; height:300px; background: rgb(228, 236, 237); resize:none; border: none;" readonly></textarea>
-            </td>
-          </tr> -->
-          <tr>
-            <td><label id = "level-label-t" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; ">Level:</label></td>
-          </tr>
-          <tr>
-            <td>
-              <textarea id="level-log-t" class="textarea2" rows="1" cols="8" style="font-size: 40pt; font-weight: bold; width:380px; height:70px;" readonly></textarea>
-            </td>
-          </tr>
-          <tr>
-            <td><label id = "distance-label-t" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; ">Distance:</label></td>
-          </tr>
-          <tr>
-            <td>
-              <textarea id="distance-log-t" class="textarea2" rows="1" cols="8" style="font-size: 40pt; font-weight: bold; width:380px; height:70px;" readonly></textarea>
-            </td>
-          </tr>
-          <tr>
-            <td><label id = "status-label-t" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; ">Status:</label></td>
-          </tr>
-          <tr>
-            <td>
-              <textarea id="status-log-t" class="textarea2" rows="1" cols="8" style="font-size: 40pt; font-weight: bold; width:380px; height:70px;" readonly></textarea>
-            </td>
-          </tr>
-          </table>
-        </td>
-        <td>
-        <table style="width:100%">
+        <table style="width:60%">
           <tr>              
-              <!-- <td> -->
+              <td>
 				<!-- need to revert back to the label as it gives better control -->
                 <!-- <div class = "blocks" id='lvl_t'> </div>
                 <div class = "blocks" id='dist_t'> </div>
                 <div class = "blocks" id='sensor_status_t'> </div>           -->
-                <!-- <textarea id="main-params-log-t" class="textarea3" rows="6" cols="8" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40pt; font-weight: 500; width:430px; height:300px; background: rgb(228, 236, 237); resize:none; border: none;" readonly></textarea>
-              </td> -->
-              
+                <textarea id="main-params-log-t" class="textarea3" rows="6" cols="8" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40pt; font-weight: 500; width:430px; height:300px; background: rgb(228, 236, 237); resize:none; border: none;" readonly></textarea>
+              </td>
               <td>
-                <textarea id="data-log_t" class="textarea2" rows="4" cols="1" style="font-size: 22pt; font-weight: bold; width:380px; height:110px;" readonly></textarea>                
+                <textarea id="data-log_t" class="textarea2" rows="4" cols="1" style="font-size: 22pt; font-weight: bold; width:395px; height:110px;" readonly>data-log_t</textarea>                
               </td>
           </tr>
         </table>
-      </td>
-      </tr>
-    </table>
-        <table style="width:100%;">
+        <table style="width:52%;">
           <tr>
-            <table style="width:100%;">
-              <!-- <td style="position: center;">
+            <table style="width:30%;">
+              <td style="position: center;">
                 <button type="center" class="button button-style1" id="btn_mode2" visibility="hidden" onclick="button_press = 13; Normal_mode();">ADVANCED MODE</button>
                 <script>
                   document.getElementById("btn_mode2").style.visibility="hidden";
                 </script>
-              </td> -->
-              <td></td><td></td>
-              <td></td><td></td>
-              <td></td><td></td>  
-              <td></td><td></td>
-              <td></td>
+              </td>
               <td style="position: center;">
                 <button type="button" class="button button-style1" id="btn_trace" onclick="button_press=10; trace_off();">TRACE OFF</button>
                 <!-- <script>
@@ -2014,32 +1877,25 @@ function myLoadFunction() {
             </table>            
           </tr>                    
         </table>
-      </div>
       </article>
     <!-- <div id="param_fields_main" style=" width:1080px; height:1080px; border-style: solid; border-width: 1px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);"> -->
       <article class="accordion-item" data-actab-group="0" data-actab-id="2">
         
         <h4 class="accordion-item__label">         
-          <!-- <tr>
-            <td><label id = "setting-message" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; height:50px; display: inline-block;">Acquiring Bluetooth Parameters. Please wait...</label></td>
-          </tr> -->
-          <div id="bt_range" style='top:-40%;  left: -20%; width:68%; height:100%; border-style: solid; border-width: 5px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);' align="center">
-            <tr>
-              <td><label id = "bluetooth-parameters-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; height:50px; display: inline-block;">Bluetooth Parameters</label></td>
-            </tr>
+
+          <div id="bt_range" style='top:-40%;  left: -20%; width:70%; height:100%; border-style: solid; border-width: 3.5px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);' align="center">
             <table style="width:100%;">
               <tr>
-                <!-- <td style="font-family: Segoe UI; font-size: 12pt; font-weight: bold; width:180px; height:80px; top:-10%; width:32%; left:30%;">
+                <td style="font-family: Segoe UI; font-size: 12pt; font-weight: bold; width:180px; height:80px; top:-10%; width:32%; left:30%;">
                   <h1>BT Range </h1>
-                </td> -->
-                <td><label id = "bt-range-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">BT Range</label></td>
+                </td>
                 <td style="position: center; width:45%;">
                   <div class="slidecontainer">
                     <input type="range" min="1" max="100" value="8" class="slider" style="position: center; height:100%;" id="myRange" onchange="testtest(value)" />
                   </div>
                 </td>
                 <td style="position: center; width:15%;">
-                  <output style="font-family: Segoe UI; font-size: 42pt; font-weight: bold;" id="rangevalue1">3m</output>
+                  <output style="font-family: Segoe UI; font-size: 42pt; font-weight: bold;" id="rangevalue1">3 m</output>
                 </td>                  
                 </tr>
             </table>
@@ -2048,55 +1904,57 @@ function myLoadFunction() {
         </h4> <!-- IMPORTANT : donot remove this tag-->
         
 
-        <div class="accordion-item__container">
-          <!-- <div id="param_fields_main" style=" width:90%; height:90%; border-style: solid; border-width: 1px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);"> -->
-          <div id="param_fields" style=" left: -40%; top: -20%; width:68%; height:80%; border-style: solid; border-width: 5px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);" align="center">
+        <div class="accordion-item__container">          
+          <!-- <div id="param_fields_main" style="width:90%; height:90%; border-style: solid; border-width: 1px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);"> -->
+          <div id="param_fields" style=" left: -20%; top: -20%; width:70%; height:880px; border-style: solid; border-width:3.5px; border-radius: 10px;  border-color: rgba(243, 112, 33, 0.952);" align="center">
+          <table id = application_parameters">
             <tr>
-              <td><label id = "radar-parameters-label" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; height:50px; display: inline-block;">RADAR Parameters</label></td>
-            </tr>
-            <table id = application_parameters">
-            <tr>
-              <td><label id = "p100" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">Mode (P100)</label></td>
+              <td><label id = "p100" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Mode (P100)</label></td>
               <td><input type="text" id="p100-box" style="font-size: 24pt; font-weight: bold; width:180px; height:80px;" onkeydown="button_press = 20; wasEnter2(this);"></td>
               <td><button type="button" class="button" onclick="button_press = 20; param_check();">Update</button></td>
+              <td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td>
             </tr>
             <tr>
-              <td><label id = "p104" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">Measurement Units (P104)</label></td>
+              <td><label id = "p104" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Measurement Units (P104)</label></td>
               <td><input type="text" id="p104-box" style="font-size: 24pt; font-weight: bold; width:180px; height:80px;" onkeydown="button_press = 21; wasEnter2(this);"></td>
               <td><button type="button" class="button" onclick="button_press = 21; param_check();">Update</button></td>
             </tr>
             <tr>
-              <td><label id = "p105" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">Empty Distance (P105)</label></td>
+              <td><label id = "p105" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Empty Distance (P105)</label></td>
               <td><input type="text" id="p105-box" style="font-size: 24pt; font-weight: bold; width:180px; height:80px;" onkeydown="button_press = 22; wasEnter2(this)"></td>
               <td><button type="button" class="button" onclick="button_press = 22; param_check();">Update</button></td>
             </tr>
             <tr>
-              <td><label id = "p106" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">Span (P106)</label></td>
+              <td><label id = "p106" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Span (P106)</label></td>
               <td><input type="text" id="p106-box" style="font-size: 24pt; font-weight: bold; width:180px; height:80px;" onkeydown="button_press = 23; wasEnter2(this);"></td>
               <td><button type="button" class="button" onclick="button_press = 23; param_check();">Update</button></td>
             </tr>
             <tr>
-              <td><label id = "p808" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">Fail Mode (P808)</label></td>
+              <td><label id = "p808" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Fail Mode (P808)</label></td>
               <td><input type="text" id="p808-box" style="font-size: 24pt; font-weight: bold; width:180px; height:80px;" onkeydown="button_press = 24; wasEnter2(this);"></td>
               <td><button type="button" class="button" onclick="button_press = 24; param_check();">Update</button></td>
             </tr>
             <tr>
-              <td><label id = "p605" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">Volume Units (P605)</label></td>
+              <td><label id = "p605" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">Volume Units (P605)</label></td>
               <td><input type="text" id="p605-box" style="font-size: 24pt; font-weight: bold; width:180px; height:80px;" onkeydown="button_press = 25; wasEnter2(this);"></td>
               <td><button type="button" class="button" onclick="button_press = 25; param_check();">Update</button></td>
             </tr>
             <tr>
-              <td><label id = "p21" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: 500; width:80px; height:80px;">P21</label></td>
+              <td><label id = "p21" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24pt; font-weight: bold; width:80px; height:80px;">P21</label></td>
               <td><input type="text" id="p21-box" style="font-size: 24pt; font-weight: bold; width:180px; height:80px;" onkeydown="button_press = 26; wasEnter2(this);"></td>
               <td><button type="button" class="button" onclick="button_press = 26; param_check();">Update</button></td>
             </tr>
           </table>
         </div>
-        </div>
       </article>
-      <!-- </div> -->
+      
     
     </section>
+    
 
     <div>
       <table>
